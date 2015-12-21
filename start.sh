@@ -3,6 +3,7 @@
 # Startup script to bootstrap calling the correct dotfile setup script
 
 set -e
+DOTFILES_ROOT=$(pwd)
 
 ###
 # Helper functions
