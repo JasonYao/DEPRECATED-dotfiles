@@ -1,0 +1,23 @@
+# Family Servers
+alias yao='ssh -l webadmin -p 30000 104.236.198.225'
+alias foundation='ssh -l jason -p 30000 45.55.139.71'
+
+# NYU Phi Kappa Sigma, Delta Phi Chapter Server
+alias skull='ssh -l jason -p 30000 skullhouse.nyc'
+
+# Lanepartner Servers
+alias lane='ssh -l jason -p 30000 104.131.102.237'
+
+# Raspberry Pi Servers
+alias pi='ssh -l pi -p 30000 72.229.125.195'
+
+# CIMS access
+alias cims='ssh jy1299@access.cims.nyu.edu'
+
+# Desktop access
+alias home='ssh -l Jason -p 30000 72.229.125.195'
+
+# Large scalability
+alias ubuntu='ssh -i ~/.ssh/aws.pem ubuntu@54.165.38.12'
+
+alias finder='ssh -i ~/.ssh/jasonLaptopEd25519 jason@54.165.38.12'

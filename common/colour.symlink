@@ -1,0 +1,6 @@
+# Colour output activation
+COLOR_BOLD="[\e[1m]"
+COLOR_DEFAULT="[\e[0m]"
+PS1="$COLOR_BOLD\u@\h \W \$ $COLOR_DEFAULT"
+
+export CLICOLOR=1

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Dot: handles installation, and updates to each settings. Run periodically to ensure latest packages are set.
+
+set -e
+
+# Sets OS X defaults
+$home/osx/set-defaults.sh
+
+# Upgrade homebrew if installed
+if test ! $(which brew); then
+	# No homebrew found: installs homebrew packages
+	$home/osx/homebrew/install.sh 2>&1
+else
+	# Homebrew found: updates
+	brew update
+	brew upgrade
+fi
