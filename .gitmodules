@@ -1,0 +1,3 @@
+[submodule "osx/terminal/peppermint"]
+	path = osx/terminal/peppermint
+	url = https://github.com/dotzero/iTerm-2-Peppermint.git
