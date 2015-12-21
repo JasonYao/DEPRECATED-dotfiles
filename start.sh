@@ -109,11 +109,6 @@ install_dotfiles () {
   done
 }
 
-##
-# Sets up git settings
-##
-/git/setup.sh
-
 # Starts linking 
 install_dotfiles
 
