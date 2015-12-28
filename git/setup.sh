@@ -32,4 +32,8 @@ success "Git name set to Jason Yao"
 git config --global user.email "jasony.edu@gmail.com"
 success "Git email set to jasony.edu@gmail.com"
 
+# Sets the push default
+git config --global push.default simple
+success "Git push default set to simple"
+
 success "Git environment installed!"
