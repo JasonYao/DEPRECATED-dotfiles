@@ -130,3 +130,5 @@ else
 	info "OS detected was: Unix, running unix setup script now"
 	unix/setup.sh
 fi
+
+success "Dotfiles successfully installed"
