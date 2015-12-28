@@ -22,8 +22,7 @@ Everything is configured and tweaked within `~/.dotfiles`.
 [dot](bin/dot) is a simple script that installs some dependencies, sets sane OS X
 defaults, and so on.
 
-TODO set up a cron job every 90 days to remind about running `dot` to keep the environment environment fresh and synced up.
-You can find this script in [bin](bin).
+[dot-unix](bin/dot-unix) is the linux specific version of dot (tested on ubuntu 14.04 & 15.10)
 
 ## License
 License file for this repo is located [here](LICENSE.md)
