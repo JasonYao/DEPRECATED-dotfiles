@@ -4,19 +4,6 @@
 
 set -e
 
-##
-# Dependency setup
-##
-
-info "OSX: installing dependencies"
-
-if source bin/dot > /tmp/dotfiles-dot 2>&1
-then
-	success "OSX dependencies installed"
-else
-	fail "OSX dependency installation failed"
-fi
-
 # Removes unix config files
 	user=$(who am i | awk '{print $1}')
 
@@ -58,3 +45,13 @@ fi
 	else
 		success ".listing_unix is already removed"
 	fi
+
+# OSX dependency installation
+info "OSX: installing dependencies"
+
+if source bin/dot > /tmp/dotfiles-dot 2>&1
+then
+    success "OSX: dependencies installed"
+else
+    fail "OSX: dependency installation failed"
+fi
