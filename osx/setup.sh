@@ -13,9 +13,6 @@ info "OSX: installing dependencies"
 if source bin/dot > /tmp/dotfiles-dot 2>&1
 then
 	success "OSX dependencies installed"
-	info "Deleting unix config file .bashrc"
-	rm $home/../.bashrc
-	success "Successfully deleted unix config file .bashrc"
 else
 	fail "OSX dependency installation failed"
 fi
@@ -23,34 +20,41 @@ fi
 # Removes unix config files
 	user=$(who am i | awk '{print $1}')
 
-	# Gets rid of .bash_profile
+	# Gets rid of .bashrc
 	profile_file="/Users/$user/.bashrc"
 	if [ -f "$profile_file" ];
 	then
-		info "Deleting unix config file .bashrc"
-		rm $home/../.bash_profile
+		rm $home/../.bashrc
 		success "Deleted unix config file .bashrc"
 	else
 		success ".bashrc was not found"
 	fi
 
 # Sets up correct nano settings
-	nanorc_unix_file="/home/$user/.nanorc_unix"
+	nanorc_unix_file="/Users/$user/.nanorc_unix"
 	if [ -f "$nanorc_unix_file" ];
 	then
-		info "Deleting nano config file .nanorc_unix"
-                rm $home/../.nanorc_unix
-                success "Deleted osx config file .nanorc_unix"
-        else
-                info ".nanorc_unix was not found"
-        fi
+		rm $home/../.nanorc_unix
+		success "Deleted unix config file .nanorc_unix"
+	else
+		info ".nanorc_unix was not found"
+	fi
 
-	nanorc_file="/home/$user/.nanorc"
+	nanorc_file="/Users/$user/.nanorc"
 	if [ -f "$nanorc_file" ];
 	then
-		info ".nanorc is already set"
+		success ".nanorc is already set"
 	else
-		info "Symlinking nano configs"
-		ln -s /Users/$user/.nanorc_unix /Users/$user/.nanorc
+		ln -s /Users/$user/.nanorc_osx /Users/$user/.nanorc
 		success "Symlinked nanorc for unix"
+	fi
+
+# Sets up correct listing settings
+	listing_unix_file="/Users/$user/.listing_unix"
+	if [ -f "$listing_unix_file" ];
+	then
+		rm $home/../.listing_unix
+		success "Deleted unix config file .listing_unix"
+	else
+		success ".listing_unix is already removed"
 	fi
