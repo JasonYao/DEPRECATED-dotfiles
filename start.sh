@@ -9,7 +9,7 @@ DOTFILES_ROOT=$(pwd)
 # Helper functions
 ##
 info () {
-	printf "  [ \033[00;34m..\033[0m ] $1"
+	printf "\r  [ \033[00;34m..\033[0m ] $1\n"
 }
 user () {
 	printf "\r  [ \033[0;33m?\033[0m ] $1 "
@@ -109,7 +109,7 @@ install_dotfiles () {
 
   local overwrite_all=false backup_all=false skip_all=false
 
-  for src in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink')
+  for src in $(find -H "$DOTFILES_ROOT" -maxdepth 3 -name '*.symlink')
   do
     dst="$HOME/.$(basename "${src%.*}")"
     link_file "$src" "$dst"
