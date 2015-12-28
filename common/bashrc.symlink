@@ -1,6 +1,6 @@
 # Unix specific dotfiles (NOTE: bash_profile should not be active)
 
-# Implements colouring for OSX
+# Implements colouring for unix
 if [ -f ~/.colour ]; then
     source ~/.colour
 fi
@@ -13,6 +13,10 @@ fi
 # Implements listing aliases
 if [ -f ~/.listing ]; then
     source ~/.listing
+fi
+
+if [ -f ~/.listing_unix ]; then
+	source ~/.listing_unix
 fi
 
 # Implements box-specific commands for ease (e.g. differing commands on laptop verus desktop)
