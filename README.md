@@ -1,10 +1,10 @@
 # Jason Yao's Dotfiles
 
-## Dotfiles
+## Description
 
 My personal dotfiles, created in order to unify the experience across all OSX and *nix systems.
 
-This based on a few select things from [Holman's repo](https://github.com/holman/dotfiles), so props to him for doing the leg work.
+This based on a few select things from [Holman's repo](https://github.com/holman/dotfiles), so props to him for doing the legwork.
 
 ## Install
 
