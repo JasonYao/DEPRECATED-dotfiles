@@ -46,18 +46,11 @@ set -e
 		success ".listing_osx has already been deleted"
 	fi
 
-# Updates & upgrades
-	sudo apt-get update -y
-	sudo apt-get dist-upgrade -y
+info "Unix: installing dependencies"
 
-# Installs underlying packages
-	sudo apt-get install git -y					# Used in general project upkeep
-	sudo apt-get install wget -y					# Used in downloading python
-	sudo apt-get install checkinstall -y			# Used in checking in python to apt-get
-	sudo apt-get install build-essential -y		# Used in compiling python
-
-# Alters SSH port to non-standard
-
-# Installs ufw
-
-# Installs fail2ban
+if source bin/dot-unix > /tmp/dotfiles-dot-unix 2>&1
+then
+	success "Unix: dependencies installed"
+else
+	fail "Unix: dependency installation failed"
+fi
