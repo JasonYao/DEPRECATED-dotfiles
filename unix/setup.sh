@@ -11,32 +11,39 @@ set -e
 	profile_file="/home/$user/.bash_profile"
 	if [ -f "$profile_file" ];
 	then
-		info "Deleting osx config file .bash_profile"
-	        rm $home/../.bash_profile
-	        success "Deleted osx config file .bash_profile"
+		rm $home/../.bash_profile
+		success "Deleted osx config file .bash_profile"
 	else
-		info ".bash_profile was not found"
+		success ".bash_profile has already been deleted"
 	fi
 
 # Sets up correct nano settings
 	nanorc_osx_file="/home/$user/.nanorc_osx"
 	if [ -f "$nanorc_osx_file" ];
 	then
-		info "Deleting nano config file .nanorc_osx"
-                rm $home/../.nanorc_osx
-                success "Deleted osx config file .nanorc_osx"
-        else
-                info ".nanorc_osx was not found"
-        fi
+		rm $home/../.nanorc_osx
+		success "Deleted osx config file .nanorc_osx"
+	else
+		success ".nanorc_osx has already been deleted"
+	fi
 
 	nanorc_file="/home/$user/.nanorc"
 	if [ -f "$nanorc_file" ];
 	then
-		info ".nanorc is already set"
+		success ".nanorc has already been set"
 	else
-		info "Symlinking nano configs"
 		ln -s /home/$user/.nanorc_unix /home/$user/.nanorc
 		success "Symlinked nanorc for unix"
+	fi
+
+# Sets up correct listing files
+	listing_osx_file="/home/$user/.listing_osx"
+	if [ -f "$listing_osx_file" ];
+	then
+		rm $home/../.listing_osx
+		success "Deleted osx config file .listing_osx"
+	else
+		success ".listing_osx has already been deleted"
 	fi
 
 # Updates & upgrades
