@@ -1,8 +1,13 @@
 # Listing aliases
-alias ls='ls --color=auto'
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
+
+alias ls='ls -F'
+alias la='ls -a'
+alias ll='ls -lah'
+
+#alias ls='ls --color=auto'
+#alias ll='ls -alF'
+#alias la='ls -A'
+#alias l='ls -CF'
 
 # Grep commands
 alias grep='grep --color=auto'
