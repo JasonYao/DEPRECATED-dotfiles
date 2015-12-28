@@ -8,9 +8,15 @@ DOTFILES_ROOT=$(pwd)
 ###
 # Helper functions
 ##
-info () {printf "  [ \033[00;34m..\033[0m ] $1"}
-user () {printf "\r  [ \033[0;33m?\033[0m ] $1 "}
-success () {printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"}
+info () {
+	printf "  [ \033[00;34m..\033[0m ] $1"
+}
+user () {
+	printf "\r  [ \033[0;33m?\033[0m ] $1 "
+}
+success () {
+	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
+}
 fail () {
   printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
   echo ''
@@ -118,9 +124,9 @@ install_dotfiles
 ##
 if [ "$(uname -s)" == "Darwin" ]
 then
-	info "OS detected was: OSX, running OSX setup script now"
-	/osx/setup.sh
+	info "OS detected was: OSX, running OSX setup script now "
+	osx/setup.sh
 else
 	info "OS detected was: Unix, running unix setup script now"
-	/unix/setup.sh
+	unix/setup.sh
 fi
