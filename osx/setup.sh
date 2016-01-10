@@ -33,7 +33,7 @@ set -e
 		success ".nanorc is already set"
 	else
 		ln -s /Users/$user/.nanorc_osx /Users/$user/.nanorc
-		success "Symlinked nanorc for unix"
+		success "Symlinked .nanorc for osx"
 	fi
 
 # Sets up correct listing settings
