@@ -12,6 +12,6 @@ then
 fi
 
 # Install homebrew packages
-brew install grc coreutils wget autoconf automake make nano openssl
+brew install grc coreutils wget autoconf automake make nano openssl pyenv pyenv-virtualenv
 
 exit 0
