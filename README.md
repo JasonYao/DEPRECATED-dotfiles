@@ -11,8 +11,9 @@ This based on a few select things from [Holman's repo](https://github.com/holman
 Run this:
 
 ```sh
-git clone https://github.com/JasonYao/dotfiles.git ~/.dotfiles
+git clone --recursive https://github.com/JasonYao/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
+git submodule update --remote
 ./start.sh
 ```
 
