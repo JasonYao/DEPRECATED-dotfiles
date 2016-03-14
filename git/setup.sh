@@ -36,4 +36,7 @@ success "Git email set to jasony.edu@gmail.com"
 git config --global push.default simple
 success "Git push default set to simple"
 
+# Sets the default editor
+git config --global core.editor "nano"
+
 success "Git environment installed!"
