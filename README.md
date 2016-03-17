@@ -26,4 +26,4 @@ defaults, and so on.
 [dot-unix](bin/dot-unix) is the linux specific version of dot (tested on ubuntu 14.04 & 15.10)
 
 ## License
-License file for this repo is located [here](LICENSE.md)
+This repo is licensed under the terms of the GNU GPL, of which a copy may be found [here](LICENSE)
