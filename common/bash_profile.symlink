@@ -5,6 +5,11 @@ if [ -f ~/.colour ]; then
     source ~/.colour
 fi
 
+# Enables context switching for java & python envs
+if [ -f ~/.env ]; then
+    source ~/.env
+fi
+
 # Implements server aliases
 if [ -f ~/.servers ]; then
     source ~/.servers
@@ -17,11 +22,6 @@ fi
 
 if [ -f ~/.listing_osx ]; then
     source ~/.listing_osx
-fi
-
-# Implements pyenv stuff
-if [ -f ~/.pyenv_config ]; then
-    source ~/.pyenv_config
 fi
 
 # Implements box-specific commands for ease (e.g. differing commands on laptop verus desktop)

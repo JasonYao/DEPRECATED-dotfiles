@@ -14,8 +14,18 @@ set -e
 		rm $home/../.bash_profile
 		success "Deleted osx config file .bash_profile"
 	else
-		success ".bash_profile has already been deleted"
+		info ".bash_profile has already been deleted"
 	fi
+
+	# Gets rid of .env
+    env_file="/home/$user/.env"
+    if [ -f "$env_file" ];
+    then
+        rm $home/../.env
+        success "Deleted osx config file .env"
+    else
+        info ".env has already been deleted"
+    fi
 
 # Sets up correct nano settings
 	nanorc_osx_file="/home/$user/.nanorc_osx"
