@@ -6,13 +6,14 @@ set -e
 
 # Sets OS X defaults
 $home/osx/set-defaults.sh
+success "Set sane OSX defaults"
 
 # Upgrade homebrew if installed
 if test ! $(which brew); then
 	# No homebrew found: installs homebrew packages
 	$home/osx/homebrew/install.sh 2>&1
 else
-	# Homebrew found: updates
+	# Homebrew found: updates and upgrades
 	brew update
 	brew upgrade
 fi

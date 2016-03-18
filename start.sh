@@ -124,7 +124,7 @@ install_dotfiles
 ##
 if [ "$(uname -s)" == "Darwin" ]
 then
-	info "OS detected was: OSX, running OSX setup script now "
+	info "OS detected was: OSX, running OSX setup script now"
 	osx/setup.sh
 else
 	info "OS detected was: Unix, running unix setup script now"
