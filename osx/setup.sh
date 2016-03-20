@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
+##
 # Operating-system specific setup: OSX
+##
 
 set -e
 
+##
 # Removes unix config files
+##
 	user=$(who am i | awk '{print $1}')
 
 	# Gets rid of .bashrc
@@ -30,7 +34,7 @@ set -e
 	nanorc_file="/Users/$user/.nanorc"
 	if [ -f "$nanorc_file" ];
 	then
-		success ".nanorc is already set"
+		info ".nanorc is already set"
 	else
 		ln -s /Users/$user/.nanorc_osx /Users/$user/.nanorc
 		success "Symlinked .nanorc for osx"
@@ -43,15 +47,27 @@ set -e
 		rm $home/../.listing_unix
 		success "Deleted unix config file .listing_unix"
 	else
-		success ".listing_unix is already removed"
+		info ".listing_unix is already removed"
 	fi
 
+##
 # OSX dependency installation
+##
 info "OSX: installing dependencies"
 
-if source bin/dot > /tmp/dotfiles-dot 2>&1
-then
-    success "OSX: dependencies installed"
+# Sets OSX defaults
+$home/osx/set-defaults.sh
+success "OSX: Sane defaults installed"
+
+# Upgrade homebrew if not installed
+if test ! $(which brew); then
+	# No homebrew found: installs homebrew packages
+	info "Homebrew: Installing fresh brew"
+	$home/osx/homebrew/install.sh
 else
-    fail "OSX: dependency installation failed"
+	# Homebrew found: updates and upgrades
+	info "Homebrew: Already installed, updating & upgrading"
+	brew update
+	brew upgrade
+	success "Homebrew: Successfully have the freshest brew"
 fi

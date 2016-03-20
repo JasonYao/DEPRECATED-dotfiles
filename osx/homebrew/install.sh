@@ -7,11 +7,12 @@ set -e
 # Installs homebrew if not installed
 if test ! $(which brew)
 then
-	info "Installing Homebrew for you"
-    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"  
+	/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	success "Homebrew: successfully installed"
 fi
 
 # Install homebrew packages
-brew install grc coreutils wget autoconf automake make nano openssl pyenv pyenv-virtualenv
-
-exit 0
+info "Homebrew: Installing common packages"
+brew tap homebrew/dupes
+brew install coreutils wget autoconf automake make nano openssl pyenv pyenv-virtualenv jenv
+success "Homebrew: All packages installed"
