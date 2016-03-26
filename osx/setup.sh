@@ -6,11 +6,23 @@
 
 set -e
 
+user=$(who am i | awk '{print $1}')
+
+##
+# Sets up message of the day tailing
+##
+	motd_file="/etc/motd"
+	if [ -f "$motd_file" ];
+	then
+		info "MotD symlink already installed"
+	else
+		sudo ln -s /Users/$user/.motd /etc/motd
+		success "MotD symlink installed"
+	fi
+
 ##
 # Removes unix config files
 ##
-	user=$(who am i | awk '{print $1}')
-
 	# Gets rid of .bashrc
 	profile_file="/Users/$user/.bashrc"
 	if [ -f "$profile_file" ];
