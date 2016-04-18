@@ -4,63 +4,91 @@
 
 set -e
 
-# Removes OSX config files
-	user=$(who am i | awk '{print $1}')
+: ${username:="jason"}
+: ${isServer:=false}
+: ${dotfilesDirectory:="/home/$username/.dotfiles"}
+: ${defaultShell:="bash"}
 
-	# Gets rid of .bash_profile
-	profile_file="/home/$user/.bash_profile"
-	if [ -f "$profile_file" ];
-	then
-		rm $home/../.bash_profile
-		success "Deleted osx config file .bash_profile"
-	else
-		info ".bash_profile has already been deleted"
-	fi
-
-	# Gets rid of .env
-    env_file="/home/$user/.env"
-    if [ -f "$env_file" ];
+function rmSymlink ()
+{
+	symlinkToBeDeleted="/home/$username/$1"
+    if [ -f "$symlinkToBeDeleted" ];
     then
-        rm $home/../.env
-        success "Deleted osx config file .env"
+        rm /home/$username/$1
+        success "Deleted osx config file $1"
     else
-        info ".env has already been deleted"
+        info "$1 has already been deleted"
     fi
+}
+
+function install_dotfiles () {
+  info 'Installing dotfiles'
+
+  local overwrite_all=false backup_all=false skip_all=false
+
+  for src in $(find -H "$dotfilesDirectory" -maxdepth 3 -name '*.symlink')
+  do
+    dst="$dotfilesDirectory/../.$(basename "${src%.*}")"
+    link_file "$src" "$dst"
+  done
+}
+
+# Symlinks all files
+	install_dotfiles
+
+# Removes OSX config files
+	rmSymlink .bash_profile
+	rmSymlink .env
+	rmSymlink .nanorc_osx
+	rmSymlink .listing_osx
+
+# Sets the user's default shell to bash if it hasn't been done already
+if [[ $(getent passwd | grep $username | grep $defaultShell) == "" ]]; then
+    info "Setting user's default shell to $defaultShell"
+    if [ $(groups | grep -E 'root|sudo') != "" ]; then
+		# User has sudo or root, sets up the default shell
+		if usermod -s $(which $defaultShell) $username ; then
+			success "User's default shell has been set to $defaultShell"
+		else
+			fail "User's default shell has been set to $defaultShell"
+		fi
+	else
+		# User does not have sudo or root privileges, tails to bash
+		echo "setenv SHELL $(which $defaultShell)" >> $dotfilesDirectory/../.bashrc
+		echo "exec $(which $defaultShell) --login" >> $dotfilesDirectory/../.bashrc
+		success "User's default shell has been set to $defaultShell"
+	fi
+fi
 
 # Sets up correct nano settings
-	nanorc_osx_file="/home/$user/.nanorc_osx"
-	if [ -f "$nanorc_osx_file" ];
-	then
-		rm $home/../.nanorc_osx
-		success "Deleted osx config file .nanorc_osx"
-	else
-		success ".nanorc_osx has already been deleted"
-	fi
-
-	nanorc_file="/home/$user/.nanorc"
+	nanorc_file="/home/$username/.nanorc"
 	if [ -f "$nanorc_file" ];
 	then
 		success ".nanorc has already been set"
 	else
-		ln -s /home/$user/.nanorc_unix /home/$user/.nanorc
+		ln -s /home/$username/.nanorc_unix /home/$username/.nanorc
+		chown -R "$username:$username" /home/$username/.nanorc
 		success "Symlinked nanorc for unix"
 	fi
 
-# Sets up correct listing files
-	listing_osx_file="/home/$user/.listing_osx"
-	if [ -f "$listing_osx_file" ];
-	then
-		rm $home/../.listing_osx
-		success "Deleted osx config file .listing_osx"
-	else
-		success ".listing_osx has already been deleted"
+# Sets up correct motd settings
+	if [[ $(ls -l /etc/update-motd.d | grep "00-header" | grep "\-rw\-r\-\-r\-\-") == "" ]]; then
+		chmod -x /etc/update-motd.d/00-header
+		success "MotD: Disabled header text"
 	fi
 
-info "Unix: installing dependencies"
+	if [[ $(ls -l /etc/update-motd.d | grep "10-help-text" | grep "\-rw\-r\-\-r\-\-") == "" ]]; then
+		chmod -x /etc/update-motd.d/10-help-text
+		success "MotD: Disabled help text"
+	fi
 
-if source bin/dot-unix > /tmp/dotfiles-dot-unix 2>&1
-then
-	success "Unix: dependencies installed"
-else
-	fail "Unix: dependency installation failed"
+	if [[ $(ls -l /etc | grep "legal.backup") == "" ]]; then
+		mv /etc/legal /etc/legal.backup
+		success "MotD: Disabled legal notice"
+	fi
+
+# Sets up unix dependencies if on a server environment
+if [ "$isServer" == "true" ]; then
+	info "Unix: installing dependencies"
+	$dotfilesDirectory/bin/dot-unix
 fi

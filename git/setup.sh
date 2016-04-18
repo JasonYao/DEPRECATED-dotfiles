@@ -4,6 +4,8 @@
 
 set -e
 
+editor="nano"
+
 ##
 # Helper functions
 ##
@@ -36,7 +38,12 @@ success "Git email set to jasony.edu@gmail.com"
 git config --global push.default simple
 success "Git push default set to simple"
 
+# Sets the output to be colourful
+git config --global color.ui auto
+success "Git output set to colourful"
+
 # Sets the default editor
-git config --global core.editor "nano"
+git config --global core.editor "$editor"
+success "Git editor set to $editor"
 
 success "Git environment installed!"

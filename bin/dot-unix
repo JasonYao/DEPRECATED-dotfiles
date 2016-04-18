@@ -1,21 +1,34 @@
 #!/usr/bin/env bash
 
-# dot-unix: The unix version of dot, handling installation & updating of each settings. Run periodically to ensure latest packages are set
+# dot-unix: Handles installation & updating of dependencies. Run periodically to ensure latest packages are set
 
 set -e
 
 # Updates & upgrades
-	sudo apt-get update -y
-	sudo apt-get dist-upgrade -y
+	info "Updating packages"
+	if sudo apt-get update -y > /dev/null ; then
+		success "Packages were updated"
+	else
+		fail "Packages were unable to be updated"
+	fi
 
-# Installs underlying packages
-	sudo apt-get install git -y					# Used in general project upkeep
-	sudo apt-get install wget -y				# Used in downloading python
-	sudo apt-get install checkinstall -y		# Used in checking in python to apt-get
-	sudo apt-get install build-essential -y		# Used in compiling python
+	info "Upgrading packages"
+	if sudo apt-get dist-upgrade -y > /dev/null ; then
+		success "Packages were upgraded"
+	else
+		fail "Packages were unable to be upgraded"
+	fi
 
-# Alters SSH port to non-standard
+# Checks for dependency packages
+	checkAndInstallPackage wget					# Used in general downloading
+	checkAndInstallPackage git					# Used in general project upkeep
+	checkAndInstallPackage checkinstall			# Used in checking in custom compiled packages to apt-get
+	checkAndInstallPackage build-essential		# Used in common compiling
 
-# Installs ufw
-
-# Installs fail2ban
+# Auto removes any unnecessary packages
+	info "Auto removing any unnecessary packages"
+	if sudo apt-get autoremove -y > /dev/null ; then
+		success "All unnecessary packages removed"
+	else
+		fail "Unable to remove unnecessary packages"
+	fi

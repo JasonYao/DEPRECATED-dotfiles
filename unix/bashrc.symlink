@@ -23,3 +23,6 @@ fi
 if [ -f ~/.specific ]; then
 	source ~/.specific
 fi
+
+# Sets up MotD
+cat ~/.motd
