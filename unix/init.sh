@@ -181,15 +181,18 @@ function setupAutoUpdate
 
 function setupUFW
 {
-# Sets up ufw (firewall)
+	# Sets up ufw (firewall)
     checkAndInstallPackage ufw
 
+	# Alters the SSH default port that the ufw application uses
+	change_substring "ports=22" "ports=30000" /etc/ufw/applications.d/openssh-server
+
     # Checks to make sure that the ssh port is setup
-    if [[ $(ufw show added | grep "ufw limit 30000/tcp") == "" ]]; then
-        if ufw limit 30000/tcp > /dev/null; then
-            success "UFW: SSH port 30000 has been rate-limited"
+    if [[ $(ufw show added | grep "ufw limit OpenSSH") == "" ]]; then
+        if ufw limit OpenSSH > /dev/null; then
+            success "UFW: SSH port has been rate-limited"
         else
-            fail "UFW: SSH port 30000 could not be rate-limited"
+            fail "UFW: SSH port could not be rate-limited"
         fi
     fi
 
@@ -222,6 +225,25 @@ function setupUFW
     fi
 }
 
+function setupFail2Ban
+{
+	checkAndInstallPackage fail2ban				# Used in ip-banning on both nginx and ufw
+
+	# Creates a local jail to use ufw
+	if [ ! -f "/etc/fail2ban/jail.local" ]; then
+		info "Fail2Ban: Creating local jail"
+		echo "[DEFAULT]" >> /etc/fail2ban/jail.local
+		echo "ignoreip = 127.0.0.1/8" >> /etc/fail2ban/jail.local
+		echo "banaction = ufw" >> /etc/fail2ban/jail.local
+		echo "maxRetry = 5" >> /etc/fail2ban/jail.local
+		echo "findtime = 600" >> /etc/fail2ban/jail.local
+		echo "bantime = 7200" >> /etc/fail2ban/jail.local
+		success "Fail2Ban: Local jail created"
+	fi
+
+	service fail2ban restart
+}
+
 if [ "$isServer" == "true" ]; then
 	# Does server setup
 	updateAndUpgrade
@@ -235,6 +257,7 @@ if [ "$isServer" == "true" ]; then
 	setupSSH
 	setupAutoUpdate
 	setupUFW
+	setupFail2Ban
 fi
 
 # Downloads and installs the dotfiles to the newly created user's directory
