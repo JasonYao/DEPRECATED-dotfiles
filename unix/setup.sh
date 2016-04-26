@@ -43,9 +43,9 @@ function install_dotfiles () {
 	rmSymlink .listing_osx
 
 # Sets the user's default shell to bash if it hasn't been done already
-if [[ $(getent passwd | grep $username | grep $defaultShell) == "" ]]; then
+if [[ $(env | grep SHELL | grep $(which $defaultShell)) == "" ]]; then
     info "Setting user's default shell to $defaultShell"
-    if [ $(groups | grep -E 'root|sudo') != "" ]; then
+    if [[ $(groups | grep -E 'root|sudo') != "" ]]; then
 		# User has sudo or root, sets up the default shell
 		if usermod -s $(which $defaultShell) $username ; then
 			success "User's default shell has been set to $defaultShell"
@@ -53,9 +53,12 @@ if [[ $(getent passwd | grep $username | grep $defaultShell) == "" ]]; then
 			fail "User's default shell has been set to $defaultShell"
 		fi
 	else
-		# User does not have sudo or root privileges, tails to bash
-		echo "setenv SHELL $(which $defaultShell)" >> $dotfilesDirectory/../.bashrc
-		echo "exec $(which $defaultShell) --login" >> $dotfilesDirectory/../.bashrc
+		info "Setting shell to $defaultShell"
+		if [[ $(cat $home/.profile | grep "setenv SHELL") == ""  ]]; then
+			echo "export SHELL=$(which bash)" >> $home/.profile
+		else
+			info "Shell is already set to $defaultShell"
+		fi
 		success "User's default shell has been set to $defaultShell"
 	fi
 fi
@@ -71,24 +74,24 @@ fi
 		success "Symlinked nanorc for unix"
 	fi
 
-# Sets up correct motd settings
-	if [[ $(ls -l /etc/update-motd.d | grep "00-header" | grep "\-rw\-r\-\-r\-\-") == "" ]]; then
-		chmod -x /etc/update-motd.d/00-header
-		success "MotD: Disabled header text"
-	fi
-
-	if [[ $(ls -l /etc/update-motd.d | grep "10-help-text" | grep "\-rw\-r\-\-r\-\-") == "" ]]; then
-		chmod -x /etc/update-motd.d/10-help-text
-		success "MotD: Disabled help text"
-	fi
-
-	if [[ $(ls -l /etc | grep "legal.backup") == "" ]]; then
-		mv /etc/legal /etc/legal.backup
-		success "MotD: Disabled legal notice"
-	fi
-
-# Sets up unix dependencies if on a server environment
 if [ "$isServer" == "true" ]; then
+	# Sets up correct motd settings
+    if [[ $(ls -l /etc/update-motd.d | grep "00-header" | grep "\-rw\-r\-\-r\-\-") == "" ]]; then
+        chmod -x /etc/update-motd.d/00-header
+        success "MotD: Disabled header text"
+    fi
+
+    if [[ $(ls -l /etc/update-motd.d | grep "10-help-text" | grep "\-rw\-r\-\-r\-\-") == "" ]]; then
+        chmod -x /etc/update-motd.d/10-help-text
+        success "MotD: Disabled help text"
+    fi
+
+    if [[ $(ls -l /etc | grep "legal.backup") == "" ]]; then
+        mv /etc/legal /etc/legal.backup
+        success "MotD: Disabled legal notice"
+    fi
+
+	# Sets up unix dependencies if on a server environment
 	info "Unix: installing dependencies"
 	$dotfilesDirectory/bin/dot-unix
 fi
