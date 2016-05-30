@@ -14,5 +14,5 @@ fi
 # Install homebrew packages
 info "Homebrew: Installing common packages"
 brew tap homebrew/dupes
-brew install coreutils wget autoconf automake make nano openssl pyenv pyenv-virtualenv jenv mmv
+brew install coreutils wget autoconf automake make nano openssl pyenv pyenv-virtualenv jenv mmv cmake rbenv
 success "Homebrew: All packages installed"
