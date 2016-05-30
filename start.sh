@@ -127,7 +127,7 @@ function link_file () {
 : ${isServer:=false}
 : ${defaultShell:="bash"}
 : ${dotfilesDirectory:="$HOME/.dotfiles"}
-: ${sshPublicKey:="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGEB2lB73L2NmzRIfFuQCRvfSyi1Imy8KK/b5mjus44O Jason@Jasons-MacBook-Pro.local"}
+: ${sshPublicKey:="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH7992Tcg+jXDki7xofrfdvyj3oitqxkAaJvEleuydmR Jason@Jasons-MacBook-Pro.local"}
 home="$dotfilesDirectory/.."
 
 if [[ "$dotfilesDirectory" == "/root/.dotfiles" ]]; then
