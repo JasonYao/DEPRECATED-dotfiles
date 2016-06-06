@@ -19,7 +19,7 @@ The following one-liner will setup initial requirements before running through a
 
 ### OSX
 ```sh
-wget https://raw.githubusercontent.com/JasonYao/dotfiles/master/start.sh &> /dev/null && bash start.sh; rm -rf start.sh
+curl -O https://raw.githubusercontent.com/JasonYao/dotfiles/master/start.sh &> /dev/null && bash start.sh; rm -rf start.sh
 ```
 
 ### Unix
