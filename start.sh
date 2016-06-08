@@ -155,7 +155,7 @@ if [[ ! -d "$dotfilesDirectory" ]]; then
 		if git clone --recursive https://github.com/JasonYao/dotfiles.git $dotfilesDirectory &> /dev/null; then
 			success "Downloaded dotfiles successfully"
 		else
-			fail "Failed to download dotfiles"
+			fail "Failed to download dotfiles, either internet connection or SSH keys aren't activated"
 		fi
 		info "OS detected was: OSX, running OSX setup script now"
 		bash $dotfilesDirectory/osx/setup.sh 2>&1

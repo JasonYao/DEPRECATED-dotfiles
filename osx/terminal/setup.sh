@@ -13,7 +13,7 @@ iterm_download_link="https://iterm2.com/downloads/beta/iTerm2-3_0_1-preview.zip"
 		cp $dotfilesDirectory/osx/terminal/font/FreeMono.ttf /Users/$(whoami)/Library/Fonts/
 		success "Font: FreeMono is now installed"
 	else
-		info "Font: FreeMono is already installed"
+		success "Font: FreeMono is already installed"
 	fi
 
 # Sets up iTerm application
@@ -30,7 +30,7 @@ iterm_download_link="https://iterm2.com/downloads/beta/iTerm2-3_0_1-preview.zip"
 
 # Disable warning when quitting
 	if [[ $(defaults read com.googlecode.iterm2 PromptOnQuit) == 0 ]]; then
-		info "iTerm: Warning when quitting is already disabled"
+		success "iTerm: Warning when quitting is already disabled"
 	else
 		info "iTerm: Warning when quitting is not disabled, disabling now"
 		defaults write com.googlecode.iterm2 PromptOnQuit -bool false
@@ -44,7 +44,7 @@ iterm_download_link="https://iterm2.com/downloads/beta/iTerm2-3_0_1-preview.zip"
 		defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
 		success "iTerm: Preference loading is now enabled"
 	else
-		info "iTerm: Preference loading is already enabled"
+		success "iTerm: Preference loading is already enabled"
 	fi
 
 # Runs iTerm as a process in the background
@@ -61,5 +61,5 @@ iterm_download_link="https://iterm2.com/downloads/beta/iTerm2-3_0_1-preview.zip"
 		ln -s $dotfilesDirectory/osx/terminal/imgcat /usr/local/bin/imgcat
 		success "Imgcat: Successfully linked imgcat command"
 	else
-		info "Imgcat: Command has already been linked"
+		success "Imgcat: Command has already been linked"
 	fi
