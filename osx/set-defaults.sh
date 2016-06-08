@@ -76,12 +76,16 @@ function check_and_set_default() {
 	fi
 
 # Sets up normal dock experience
-	check_and_set_default "com.apple.Dock autohide" 1 "Dock: Autohiding is already enabled" "-bool TRUE; killall Dock" "Dock: Autohiding is now enabled"
-	check_and_set_default "com.apple.Dock magnification" 1 "Dock: Magnification is already enabled" "-bool TRUE; killall Dock" "Dock: Magnification is now enabled"
+	check_and_set_default "com.apple.Dock autohide" 1 "Dock: Autohiding is already enabled" "-bool true; killall Dock" "Dock: Autohiding is now enabled"
+	check_and_set_default "com.apple.Dock magnification" 1 "Dock: Magnification is already enabled" "-bool true; killall Dock" "Dock: Magnification is now enabled"
 
 # Sets the size of icons (largesize == under magnification)
 	check_and_set_default "com.apple.Dock tilesize" 52 "Dock: Normal tile size is already set" "52" "Dock: Normal tile size is now set"
 	check_and_set_default "com.apple.Dock largesize" 76 "Dock: Magnification size is already set" "76" "Dock: Magnification size is now set"
+
+# Disables bluetooth if enabled
+	check_and_set_default "/Library/Preferences/com.apple.Bluetooth.plist ControllerPowerState" 0 "Bluetooth: BT is already disabled" "-bool false" \
+		"Bluetooth: BT is now disabled"
 
 # Disables indexing and searching of the bootcamp volume if it's named bootcamp (case insensitive)
 	if [[ $(diskutil list | grep -i bootcamp) != "" ]]; then
