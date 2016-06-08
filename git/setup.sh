@@ -4,46 +4,40 @@
 
 set -e
 
-editor="nano"
+: ${git_editor:="nano"}
+: ${git_username:="Jason Yao"}
+: ${git_email:="jasony.edu@gmail.com"}
 
 ##
 # Helper functions
 ##
-info () {
-	printf "  [ \033[00;34m..\033[0m ] $1"
+function info () {
+	printf "  [ \033[00;34m..\033[0m ] $1\n"
 }
-user () {
-	printf "\r  [ \033[0;33m?\033[0m ] $1 "
+function user () {
+	printf "\r  [ \033[0;33m?\033[0m ] $1\n"
 }
-success () {
+function success () {
 	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
 }
-fail () {
+function fail () {
   printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
   echo ''
   exit
 }
+function git_set() {
+	if [[ $(git config -l | grep $1 | grep $2) == "" ]]; then
+		git config --global $1 $2
+		success "Git: Set $1 to $2"
+	else
+		info "Git: $1 has already been set to $2"
+	fi
+}
 
-info "setting up git environment"
-
-# Sets the name
-git config --global user.name "Jason Yao"
-success "Git name set to Jason Yao"
-
-# Sets the email
-git config --global user.email "jasony.edu@gmail.com"
-success "Git email set to jasony.edu@gmail.com"
-
-# Sets the push default
-git config --global push.default simple
-success "Git push default set to simple"
-
-# Sets the output to be colourful
-git config --global color.ui auto
-success "Git output set to colourful"
-
-# Sets the default editor
-git config --global core.editor "$editor"
-success "Git editor set to $editor"
-
-success "Git environment installed!"
+info "Git: Checking current environment"
+git_set user.name $git_username
+git_set user.email $git_email
+git_set push.default simple
+git_set color.ui auto
+git_set core.editor $git_editor
+success "Git: Environment installed!"

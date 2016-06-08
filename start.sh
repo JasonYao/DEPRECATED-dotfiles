@@ -10,25 +10,20 @@ set -e
 function info () {
 	printf "\r  [ \033[00;34m..\033[0m ] $1\n"
 }
-
 function user () {
 	printf "\r  [ \033[0;33m?\033[0m ] $1 "
 }
-
 function success () {
 	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
 }
-
 function warn () {
   printf "\r\033[2K  [\033[0;31mWARNING\033[0m] $1\n"
 }
-
 function fail () {
   printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
   echo ''
   exit
 }
-
 function checkAndInstallPackage () {
     info "Checking for $1"
     if dpkg -s $1 > /dev/null 2>&1 ; then
@@ -129,6 +124,9 @@ function link_file () {
 : ${dotfilesDirectory:="$HOME/.dotfiles"}
 : ${sshPublicKey:="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhNCsxxzqX4c0mKcEmuiDdjnaHg2eQtmaTR3RWolf8F Jason@Jasons-MacBook-Pro.local"}
 home="$dotfilesDirectory/.."
+: ${git_editor:="nano"}
+: ${git_username:="Jason Yao"}
+: ${git_email:="jasony.edu@gmail.com"}
 
 if [[ "$dotfilesDirectory" == "/root/.dotfiles" ]]; then
 	dotfilesDirectory="/home/$username/.dotfiles"
@@ -179,9 +177,13 @@ else
 	else
 		fail "Dotfiles: Unable to update dotfiles"
 	fi
+
 	if [ "$(uname -s)" == "Darwin" ]; then
 		$dotfilesDirectory/osx/setup.sh 2>&1
 	else
 		$dotfilesDirectory/unix/setup.sh 2>&1
 	fi
 fi
+
+# Sets up git environment
+git/setup.sh
