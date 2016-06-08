@@ -95,3 +95,13 @@ if [ "$isServer" == "true" ]; then
 	info "Unix: installing dependencies"
 	$dotfilesDirectory/bin/dot-unix
 fi
+
+# Sets up private bin
+if [[ -d "/home/$username/.bin" ]]; then
+	success ".bin: Private bin is already set up"
+else
+	info ".bin: Private bin has not been setup, setting up now"
+	mkdir /home/$username/.bin
+	ln -s $dotfilesDirectory/bin/* /home/$username/.bin
+	success ".bin: Private bin is now set up"
+fi

@@ -58,7 +58,7 @@ iterm_download_link="https://iterm2.com/downloads/beta/iTerm2-3_0_1-preview.zip"
 
 # Sets up imgcat
 	if [[ $(which imgcat) == "" ]]; then
-		ln -s $dotfilesDirectory/osx/terminal/imgcat /usr/local/bin/imgcat
+		ln -s $dotfilesDirectory/bin/imgcat /usr/local/bin/imgcat
 		success "Imgcat: Successfully linked imgcat command"
 	else
 		success "Imgcat: Command has already been linked"
