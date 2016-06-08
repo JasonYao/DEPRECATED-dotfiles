@@ -87,6 +87,9 @@ function check_and_set_default() {
 	check_and_set_default "/Library/Preferences/com.apple.Bluetooth.plist ControllerPowerState" 0 "Bluetooth: BT is already disabled" "-bool false" \
 		"Bluetooth: BT is now disabled"
 
+# Disables guest accounts if enabled
+	check_and_set_default "/Library/Preferences/com.apple.loginwindow.plist GuestEnabled" 0 "User: Guest account is already disabled" "-bool false" \
+		"User: Guest account is now disabled"
 # Disables indexing and searching of the bootcamp volume if it's named bootcamp (case insensitive)
 	if [[ $(diskutil list | grep -i bootcamp) != "" ]]; then
 		if [[ $(sudo mdutil -s /Volumes/$(diskutil list | grep -io bootcamp) | grep disabled) == "" ]]; then
