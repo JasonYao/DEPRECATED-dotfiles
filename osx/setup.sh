@@ -61,14 +61,6 @@ install_dotfiles
 		success "Symlinked .nanorc for osx"
 	fi
 
-# Sets up imgcat
-if [[ $(which imgcat) == "" ]]; then
-	ln -s $dotfilesDirectory/osx/terminal/imgcat /usr/local/bin/imgcat
-	success "Imgcat: Successfully linked imgcat command"
-else
-	info "Imgcat: Command has already been linked"
-fi
-
 # OSX dependency installation
 info "OSX: installing dependencies"
 
@@ -100,3 +92,6 @@ else
 		fail "Homebrew: Failed to upgrade to the latest brew"
 	fi
 fi
+
+# Sets up iTerm environment
+$dotfilesDirectory/osx/terminal/setup.sh

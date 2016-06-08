@@ -26,10 +26,10 @@ function checkAndSetFirewall () {
 # $5 = message_success
 function check_and_set_default() {
 	if [[ $(defaults read $1) == $2 ]]; then
-		info $3
+		info "$3"
 	else
 		defaults write $1 $4
-		success $5
+		success "$5"
 	fi
 }
 
