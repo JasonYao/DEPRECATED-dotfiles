@@ -30,7 +30,7 @@ function git_set() {
 		git config --global $1 $2
 		success "Git: Set $1 to $2"
 	else
-		info "Git: $1 has already been set to $2"
+		success "Git: $1 has already been set to $2"
 	fi
 }
 

@@ -26,7 +26,7 @@ function checkAndSetFirewall () {
 # $5 = message_success
 function check_and_set_default() {
 	if [[ $(defaults read $1) == $2 ]]; then
-		info "$3"
+		success "$3"
 	else
 		defaults write $1 $4
 		success "$5"
@@ -72,7 +72,7 @@ function check_and_set_default() {
 		defaults write com.apple.dock persistent-others -array-add '{"tile-data" = {"list-type" = 1;}; "tile-type" = "recents-tile";}'; killall Dock
 		success "Dock: Recent applications stack is now installed"
 	else
-		info "Dock: Recent applications stack is already installed"
+		success "Dock: Recent applications stack is already installed"
 	fi
 
 # Sets up normal dock experience
@@ -90,13 +90,41 @@ function check_and_set_default() {
 # Disables guest accounts if enabled
 	check_and_set_default "/Library/Preferences/com.apple.loginwindow.plist GuestEnabled" 0 "User: Guest account is already disabled" "-bool false" \
 		"User: Guest account is now disabled"
+
+# Sets input languages
+	# Checks for traditional chinese pinyin
+	if [[ $(defaults read com.apple.HIToolbox.plist AppleEnabledInputSources | grep TCIM.Pinyin) == "" ]]; then
+		info "Languages: Traditional Chinese input via pinyin is not installed, installing now"
+		defaults write com.apple.HIToolbox AppleEnabledInputSources -array-add \
+			'<dict><key>Bundle ID</key><string>com.apple.inputmethod.TCIM</string><key>"Input Mode"</key><string>com.apple.inputmethod.TCIM.Pinyin</string> \
+			<key>InputSourceKind</key><string>Input Mode</string></dict>'
+		success "Languages: Traditional Chinese input via pinyin is now installed"
+	else
+		success "Languages: Traditional Chinese input via pinyin is already installed"
+	fi
+
+	if [[ $(defaults read com.apple.HIToolbox.plist AppleEnabledInputSources | grep .TCIM\" -A 1| grep "Keyboard Input Method") == "" ]]; then
+		defaults write com.apple.HIToolbox AppleEnabledInputSources -array-add \
+			'<dict><key>Bundle ID</key><string>com.apple.inputmethod.TCIM</string><key>InputSourceKind</key><string>Keyboard Input Method</string></dict>'
+	fi
+
+	# Checks for traditional chinese hand writing
+	if [[ $(defaults read com.apple.HIToolbox.plist AppleEnabledInputSources | grep ChineseHandwriting) == "" ]]; then
+		info "Languages: Traditional Chinese input via hand writing is not installed, installing now"
+		defaults write com.apple.HIToolbox AppleEnabledInputSources -array-add \
+			'<dict><key>Bundle ID</key><string>com.apple.inputmethod.ChineseHandwriting</string><key>InputSourceKind</key><string>Non Keyboard Input Method</string></dict>'
+		success "Languages: Traditional Chinese input via hand writing is now installed"
+	else
+		success "Languages: Traditional Chinese input via hand writing is already installed"
+	fi
+
 # Disables indexing and searching of the bootcamp volume if it's named bootcamp (case insensitive)
 	if [[ $(diskutil list | grep -i bootcamp) != "" ]]; then
 		if [[ $(sudo mdutil -s /Volumes/$(diskutil list | grep -io bootcamp) | grep disabled) == "" ]]; then
 			sudo mdutil -i off -d /Volumes/$(diskutil list | grep -io bootcamp)
 			success "Spotlight: Disabled indexing & searching of bootcamp partition"
 		else
-			info "Spotlight: Indexing & searching of bootcamp partition already disabled"
+			success "Spotlight: Indexing & searching of bootcamp partition already disabled"
 		fi
 	else
 		info "Spotlight: No bootcamp partition detected"
