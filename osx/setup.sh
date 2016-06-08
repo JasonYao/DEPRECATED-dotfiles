@@ -12,19 +12,17 @@ set -e
 home="$dotfilesDirectory/.."
 
 function install_dotfiles () {
-  info 'Installing dotfiles'
+	info 'Installing dotfiles'
+	local overwrite_all=false backup_all=false skip_all=false
 
-  local overwrite_all=false backup_all=false skip_all=false
-
-  for src in $(find -H "$dotfilesDirectory" -maxdepth 3 -name '*.symlink')
-  do
-    dst="$home/.$(basename "${src%.*}")"
-    link_file "$src" "$dst"
-  done
+	for src in $(find -H "$dotfilesDirectory" -maxdepth 3 -name '*.symlink')
+	do
+		dst="$home/.$(basename "${src%.*}")"
+		link_file "$src" "$dst"
+	done
 }
 
-function rmSymlink ()
-{
+function rmSymlink () {
     symlinkToBeDeleted="$home/$1"
     if [ -f "$symlinkToBeDeleted" ];
     then
@@ -62,6 +60,14 @@ install_dotfiles
 		ln -s $home/.nanorc_osx $home/.nanorc
 		success "Symlinked .nanorc for osx"
 	fi
+
+# Sets up imgcat
+if [[ $(which imgcat) == "" ]]; then
+	ln -s $dotfilesDirectory/osx/terminal/imgcat /usr/local/bin/imgcat
+	success "Imgcat: Successfully linked imgcat command"
+else
+	info "Imgcat: Command has already been linked"
+fi
 
 # OSX dependency installation
 info "OSX: installing dependencies"
