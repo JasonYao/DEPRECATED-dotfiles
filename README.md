@@ -43,6 +43,9 @@ Values available for being overwritten:
 - Default Shell: `defaultShell="bash"` || `defaultShell="zsh"`
 - Dotfiles Directory: `dotfilesDirectory="ABSOLUTE/PATH/TO/FOLDER/YOU'D/LIKE/TO/STORE/THE/DOTFILES/IN"`
 - SSH Public Key: `sshPublicKey="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGEB2lB73L2NmzRIfFuQCRvfSyi1Imy8KK/b5mjus44O Jason@Jasons-MacBook-Pro.local"`
+- Git Username: `git_username="YOUR USERNAME HERE"`
+- Git Email: `git_email="YOUR EMAIL HERE"`
+- Git Editor: `git_editor="YOUR EDITOR HERE"`
 
 * NOTE: The default is that isServer is false, so no real need to pass this flag in entirely if it is not a server environment
 
