@@ -58,8 +58,12 @@ iterm_download_link="https://iterm2.com/downloads/beta/iTerm2-3_0_1-preview.zip"
 
 # Sets up imgcat
 	if [[ $(which imgcat) == "" ]]; then
-		ln -s $dotfilesDirectory/bin/imgcat /usr/local/bin/imgcat
-		success "Imgcat: Successfully linked imgcat command"
+		info "Imgcat: Symlink is not created yet, creating now"
+		if ln -s $dotfilesDirectory/bin/imgcat /usr/local/bin/imgcat ; then
+			success "Imgcat: Successfully symlinked imgcat command"
+		else
+			fail "Imgcat: Failed to symlink imgcat command"
+		fi
 	else
-		success "Imgcat: Command has already been linked"
+		success "Imgcat: Command is enabled"
 	fi
