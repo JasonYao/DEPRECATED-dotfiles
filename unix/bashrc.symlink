@@ -1,28 +1,31 @@
 # Unix specific dotfiles (NOTE: bash_profile should not be active)
 
 # Implements colouring for unix
-if [ -f ~/.colour ]; then
-    source ~/.colour
-fi
+	if [ -f ~/.colour ]; then
+		source ~/.colour
+	fi
 
 # Implements server aliases
-if [ -f ~/.servers ]; then
-    source ~/.servers
-fi
+	if [ -f ~/.servers ]; then
+		source ~/.servers
+	fi
 
 # Implements listing aliases
-if [ -f ~/.listing ]; then
-    source ~/.listing
-fi
+	if [ -f ~/.listing ]; then
+		source ~/.listing
+	fi
 
-if [ -f ~/.listing_unix ]; then
-	source ~/.listing_unix
-fi
+	if [ -f ~/.listing_unix ]; then
+		source ~/.listing_unix
+	fi
 
 # Implements box-specific commands for ease (e.g. differing commands on laptop verus desktop)
-if [ -f ~/.specific ]; then
-	source ~/.specific
-fi
+	if [ -f ~/.specific ]; then
+		source ~/.specific
+	fi
 
 # Sets up MotD
-cat ~/.motd
+	cat ~/.motd
+
+# Starts the ssh agent
+	eval `ssh-agent`
