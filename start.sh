@@ -22,7 +22,7 @@ function warn () {
 function fail () {
   printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
   echo ''
-  exit
+  exit 1
 }
 function checkAndInstallPackage () {
     info "Checking for $1"
@@ -186,4 +186,4 @@ else
 fi
 
 # Sets up git environment
-git/setup.sh
+$dotfilesDirectory/git/setup.sh
