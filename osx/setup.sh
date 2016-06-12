@@ -102,9 +102,9 @@ fi
 	fi
 
 # Sets up iTerm environment
-info "Terminal: Setting defaults"
-if $dotfilesDirectory/osx/terminal/setup.sh; then
-	success "Terminal: Defaults successfully set"
-else
-	fail "Terminal: Defaults failed to be set"
-fi
+	info "Terminal: Setting defaults"
+	if $dotfilesDirectory/osx/terminal/setup.sh; then
+		success "Terminal: Defaults successfully set"
+	else
+		fail "Terminal: Defaults failed to be set"
+	fi

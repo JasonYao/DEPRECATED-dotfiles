@@ -55,15 +55,3 @@ iterm_download_link="https://iterm2.com/downloads/beta/iTerm2-3_0_1-preview.zip"
 		perl -i -0pe 's/<\/dict>\n<\/plist>/\t<key>LSUIElement<\/key>\n\t<true\/>\n<\/dict>\n<\/plist>/' $iterm_info_plist
 		success "iTerm: Application is now backgrounded"
 	fi
-
-# Sets up imgcat
-	if [[ $(which imgcat) == "" ]]; then
-		info "Imgcat: Symlink is not created yet, creating now"
-		if ln -s $dotfilesDirectory/bin/imgcat /usr/local/bin/imgcat ; then
-			success "Imgcat: Successfully symlinked imgcat command"
-		else
-			fail "Imgcat: Failed to symlink imgcat command"
-		fi
-	else
-		success "Imgcat: Command is enabled"
-	fi
