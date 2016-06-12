@@ -33,6 +33,23 @@ function check_and_set_default() {
 	fi
 }
 
+# $1 = preference_name
+# $2 = target_value
+# $3 = not_enabled_info_message
+# $4 = target_type_and_value
+# $5 = message_success
+# $6 = message_alread_complete
+function check_and_set_dock() {
+	if [[ $(defaults read com.apple.Dock | grep "$1 = $2") == "" ]]; then
+		info "$3"
+		defaults write com.apple.Dock $1 $4
+		killall Dock
+		success "$5"
+	else
+		success "$6"
+	fi
+}
+
 # Disable press-and-hold for keys in favor of key repeat
 	check_and_set_default "-g ApplePressAndHoldEnabled" 0 "Keyboard: Press & hold has already been disabled" "-bool false" "Keyboard: Press & hold has been disabled"
 
@@ -67,7 +84,7 @@ function check_and_set_default() {
 		"iCloud: .DS_Store file writing is now disabled on network drives"
 
 # Enables recent applications stack in dock
-	if [[ $(defaults read com.apple.dock persistent-others | grep recents-tile) == "" ]]; then
+	if [[ $(defaults read com.apple.Dock persistent-others | grep recents-tile) == "" ]]; then
 		info "Dock: Recent applications stack is not installed, installing now"
 		defaults write com.apple.dock persistent-others -array-add '{"tile-data" = {"list-type" = 1;}; "tile-type" = "recents-tile";}'; killall Dock
 		success "Dock: Recent applications stack is now installed"
@@ -76,12 +93,28 @@ function check_and_set_default() {
 	fi
 
 # Sets up normal dock experience
-	check_and_set_default "com.apple.Dock autohide" 1 "Dock: Autohiding is already enabled" "-bool true; killall Dock" "Dock: Autohiding is now enabled"
-	check_and_set_default "com.apple.Dock magnification" 1 "Dock: Magnification is already enabled" "-bool true; killall Dock" "Dock: Magnification is now enabled"
+	check_and_set_dock "autohide" "1" "Dock: Autohiding is not enabled, enabling now" "-bool true" "Dock: Autohiding is now enabled" "Dock: Autohiding is already enabled"
+	check_and_set_dock "magnification" "1" "Dock: Magnification is not enabled, enabling now" "-bool true" "Dock: Magnification is now enabled" \
+		"Dock: Magnification is already enabled"
 
-# Sets the size of icons (largesize == under magnification)
-	check_and_set_default "com.apple.Dock tilesize" 52 "Dock: Normal tile size is already set" "52" "Dock: Normal tile size is now set"
-	check_and_set_default "com.apple.Dock largesize" 76 "Dock: Magnification size is already set" "76" "Dock: Magnification size is now set"
+	# Sets the size of icons (largesize == under magnification)
+	check_and_set_dock "tilesize" "52" "Dock: Tilesize is not correctly set" "52" "Dock: Tilesize is now correctly set" "Dock: Tilesize is already correctly set"
+	check_and_set_dock "largesize" "76" "Dock: Magnification tilesize is not correctly set" "-float 76" "Dock: Magnification tilesize is now correctly set" \
+		"Dock: Magnification tilesize is already correctly set"
+
+	# Enables recent applications stack in dock
+	if [[ $(defaults read com.apple.Dock persistent-others | grep recents-tile) == "" ]]; then
+		info "Dock: Recent applications stack is not installed, installing now"
+		defaults write com.apple.dock persistent-others -array-add '{"tile-data" = {"list-type" = 1;}; "tile-type" = "recents-tile";}'
+		killall Dock
+		success "Dock: Recent applications stack is now installed"
+	else
+		success "Dock: Recent applications stack is already installed"
+	fi
+
+	# Sets up app expose gesture
+	check_and_set_dock "showAppExposeGestureEnabled" "1" "Trackpad: Show app expose gesture is not enabled" "1" "Trackpad: Show app expose gesture is now enabled" \
+		"Trackpad: Show app expose gesture is already enabled"
 
 # Disables bluetooth if enabled
 	check_and_set_default "/Library/Preferences/com.apple.Bluetooth.plist ControllerPowerState" 0 "Bluetooth: BT is already disabled" "-bool false" \
@@ -117,25 +150,6 @@ function check_and_set_default() {
 	else
 		success "Languages: Traditional Chinese input via hand writing is already installed"
 	fi
-
-# Checks home directory permissions
-	info "Home directory permissions: Checking permission status"
-	ls -ald ~/.*/ ~/*/ |
-	{
-		while read line; do
-			if [[ $(echo $line | grep "/Users/Jason/./") == "" ]] && [[ $(echo $line | grep "/Users/Jason/../") == "" ]]; then
-				if [[ $(echo $line | grep "drwxr-xr-x") == "" ]]; then
-					wrong_permissions_dir=$(echo $line | awk '{print $9;}')
-					info "Directory permissions: $wrong_permissions_dir's permissions are incorrect, chmodding 755 now"
-					if sudo chmod -R 755 $wrong_permissions_dir ; then
-						success "Directory permissions: $wrong_permissions_dir's permissions are correctly set now"
-					else
-						fail "Directory permissions: $wrong_permissions_dir's permissions failed to be set"
-					fi
-				fi
-			fi
-		done
-	}
 
 # Disables indexing and searching of the bootcamp volume if it's named bootcamp (case insensitive)
 	if [[ $(diskutil list | grep -i bootcamp) != "" ]]; then
