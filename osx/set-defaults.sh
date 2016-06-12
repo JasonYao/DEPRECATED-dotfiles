@@ -118,6 +118,25 @@ function check_and_set_default() {
 		success "Languages: Traditional Chinese input via hand writing is already installed"
 	fi
 
+# Checks home directory permissions
+	info "Home directory permissions: Checking permission status"
+	ls -ald ~/.*/ ~/*/ |
+	{
+		while read line; do
+			if [[ $(echo $line | grep "/Users/Jason/./") == "" ]] && [[ $(echo $line | grep "/Users/Jason/../") == "" ]]; then
+				if [[ $(echo $line | grep "drwxr-xr-x") == "" ]]; then
+					wrong_permissions_dir=$(echo $line | awk '{print $9;}')
+					info "Directory permissions: $wrong_permissions_dir's permissions are incorrect, chmodding 755 now"
+					if sudo chmod -R 755 $wrong_permissions_dir ; then
+						success "Directory permissions: $wrong_permissions_dir's permissions are correctly set now"
+					else
+						fail "Directory permissions: $wrong_permissions_dir's permissions failed to be set"
+					fi
+				fi
+			fi
+		done
+	}
+
 # Disables indexing and searching of the bootcamp volume if it's named bootcamp (case insensitive)
 	if [[ $(diskutil list | grep -i bootcamp) != "" ]]; then
 		if [[ $(sudo mdutil -s /Volumes/$(diskutil list | grep -io bootcamp) | grep disabled) == "" ]]; then
