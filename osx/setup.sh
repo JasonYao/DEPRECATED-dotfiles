@@ -68,7 +68,7 @@ info "OSX: installing dependencies"
 if $dotfilesDirectory/osx/set-defaults.sh ; then
 	success "OSX: Sane defaults installed"
 else
-	fail: "OSX: Failed to set sane defaults"
+	fail "OSX: Failed to set sane defaults"
 fi
 
 # Upgrade homebrew if not installed

@@ -50,6 +50,62 @@ function check_and_set_dock() {
 	fi
 }
 
+# $1 = app_name
+function check_and_manage_dock_apps() {
+	if [[ $(defaults read com.apple.Dock persistent-apps | grep "$1") == "" ]]; then
+		info "Dock: $1 is not set on the dock, setting now"
+		defaults write com.apple.dock persistent-apps -array-add \
+			"<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/$1.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+		success "Dock: $1 is now set on the dock"
+	else
+		success "Dock: $1 is already set on the dock"
+	fi
+}
+
+function repopulate_all_dock_apps() {
+	check_and_manage_dock_apps "Launchpad"
+	check_and_manage_dock_apps "Notes"
+	check_and_manage_dock_apps "iTunes"
+	check_and_manage_dock_apps "App Store"
+	check_and_manage_dock_apps "System Preferences"
+	check_and_manage_dock_apps "Firefox"
+	killall Dock
+}
+
+# Does this once instead of doing all over each time
+valid_apps=("launchpad" "Notes" "iTunes" "appstore" "systempreferences" "firefox")
+invert_string="grep -v"
+is_first=0
+
+for app in ${valid_apps[@]}; do
+    invert_string+=" -e \"${app}\""
+done
+
+function check_and_remove_bad_dock_apps() {
+	if [[ $(defaults read com.apple.Dock persistent-apps | grep "bundle-identifier" | eval $invert_string) != "" ]]; then
+		info "Dock: Contains non-default applications, killing off now"
+		defaults delete com.apple.Dock persistent-apps
+		killall Dock
+		success "Dock: All non-default applications sanitised"
+	else
+		success "Dock: All non-default applications already sanitised"
+	fi
+	info "Dock: Checking for all default app existences"
+	repopulate_all_dock_apps
+	success "Dock: All default apps are in place"
+}
+
+function check_and_manage_dock_folders() {
+	if [[ $(defaults read com.apple.Dock persistent-others | grep "$1;") == "" ]]; then
+		info "Dock: $1 folder is not set on the dock, setting now"
+		defaults write com.apple.dock persistent-others -array-add \
+			"<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>$1</string><key>_CFURLStringType</key><integer>0</integer></dict></dict><key>tile-type</key><string>directory-tile</string></dict>"
+		success "Dock: $1 folder is now set on the dock"
+	else
+		success "Dock: $1 folder is already set on the dock"
+	fi
+}
+
 # Disable press-and-hold for keys in favor of key repeat
 	check_and_set_default "-g ApplePressAndHoldEnabled" 0 "Keyboard: Press & hold has already been disabled" "-bool false" "Keyboard: Press & hold has been disabled"
 
@@ -110,6 +166,18 @@ function check_and_set_dock() {
 		success "Dock: Recent applications stack is now installed"
 	else
 		success "Dock: Recent applications stack is already installed"
+	fi
+
+	# Minimises the apps in the dock to those useful
+	check_and_remove_bad_dock_apps
+
+	# Checks for applications folder existence in dock
+	if [[ $(defaults read com.apple.dock persistent-others | grep "\"file-label\" = Applications;") == "" ]]; then
+		info "Dock: Application folder not found, adding now"
+		check_and_manage_dock_folders "Applications"
+		killall Dock
+	else
+		success "Dock: Application folder is already on the dock"
 	fi
 
 	# Sets up app expose gesture
