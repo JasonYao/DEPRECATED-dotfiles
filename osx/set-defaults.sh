@@ -199,8 +199,7 @@ function check_and_manage_dock_folders() {
 	if [[ $(defaults read com.apple.HIToolbox.plist AppleEnabledInputSources | grep TCIM.Pinyin) == "" ]]; then
 		info "Languages: Traditional Chinese input via pinyin is not installed, installing now"
 		defaults write com.apple.HIToolbox AppleEnabledInputSources -array-add \
-			'<dict><key>Bundle ID</key><string>com.apple.inputmethod.TCIM</string><key>"Input Mode"</key><string>com.apple.inputmethod.TCIM.Pinyin</string> \
-			<key>InputSourceKind</key><string>Input Mode</string></dict>'
+			'<dict><key>Bundle ID</key><string>com.apple.inputmethod.TCIM</string><key>"Input Mode"</key><string>com.apple.inputmethod.TCIM.Pinyin</string><key>InputSourceKind</key><string>Input Mode</string></dict>'
 		success "Languages: Traditional Chinese input via pinyin is now installed"
 	else
 		success "Languages: Traditional Chinese input via pinyin is already installed"
