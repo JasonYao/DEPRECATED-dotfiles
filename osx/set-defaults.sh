@@ -220,6 +220,17 @@ function check_and_manage_dock_folders() {
 		success "Languages: Traditional Chinese input via hand writing is already installed"
 	fi
 
+	# Checks for whether the text input switcher is enabled
+	if [[ $(defaults read com.apple.systemuiserver menuExtras | grep TextInput.menu) == "" ]]; then
+		info "Languages: Text input switcher is not enabled, enabling now"
+		defaults write com.apple.systemuiserver menuExtras -array-add \
+			'<string>/System/Library/CoreServices/Menu Extras/TextInput.menu</string>'
+		success "Languages: Text input switcher is now enabled"
+	else
+		success "Languages: Text input switcher is already enabled"
+	fi
+
+
 # Disables indexing and searching of the bootcamp volume if it's named bootcamp (case insensitive)
 	if [[ $(diskutil list | grep -i bootcamp) != "" ]]; then
 		if [[ $(sudo mdutil -s /Volumes/$(diskutil list | grep -io bootcamp) | grep disabled) == "" ]]; then
