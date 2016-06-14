@@ -21,7 +21,7 @@ iterm_download_link="https://iterm2.com/downloads/beta/iTerm2-3_0_1-preview.zip"
 		success "iTerm: Application has been already installed"
 	else
 		info "iTerm: Application has not been installed, installing now"
-		wget $iterm_download_link -O ~/Desktop/iTerm.zip
+		wget $iterm_download_link -O ~/Desktop/iTerm.zip -q --show-progress
 		# Since unzip didn't end up decompressing correctly (application image was not there), we'll use the system's Archive Utility.app instead
 		open -a /System/Library/CoreServices/Applications/Archive\ Utility.app/ iTerm.zip
 		mv ~/Desktop/iTerm.app /Applications
