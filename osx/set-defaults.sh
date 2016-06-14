@@ -185,8 +185,10 @@ function check_and_manage_dock_folders() {
 		"Trackpad: Show app expose gesture is already enabled"
 
 # Disables bluetooth if enabled
-	check_and_set_default "/Library/Preferences/com.apple.Bluetooth.plist ControllerPowerState" 0 "Bluetooth: BT is already disabled" "-bool false" \
-		"Bluetooth: BT is now disabled"
+	if [[ $(defaults read /Library/Preferences/com.apple.Bluetooth.plist | grep "does not exist") == "" ]]; then
+		check_and_set_default "/Library/Preferences/com.apple.Bluetooth.plist ControllerPowerState" 0 "Bluetooth: BT is already disabled" "-bool false" \
+			"Bluetooth: BT is now disabled"
+	fi
 
 # Disables guest accounts if enabled
 	check_and_set_default "/Library/Preferences/com.apple.loginwindow.plist GuestEnabled" 0 "User: Guest account is already disabled" "-bool false" \
