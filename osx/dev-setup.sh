@@ -77,7 +77,7 @@ ruby_versions=(2.3.1)
 # Ruby check and set
 	for version in ${ruby_versions[@]}; do
 		if [[ $(rbenv versions | grep ${version}) == "" ]]; then
-			info "Rbenv: Ruby version ${version} is no installed yet, installing now"
+			info "Rbenv: Ruby version ${version} is not installed yet, installing now"
 			if rbenv install ${version} &> /dev/null ; then
 				success "Rbenv: Ruby version ${version} is now installed"
 			else
