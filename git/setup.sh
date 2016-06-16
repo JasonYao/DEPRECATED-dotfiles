@@ -7,6 +7,7 @@ set -e
 : ${git_editor:="nano"}
 : ${git_username:="Jason Yao"}
 : ${git_email:="jasony.edu@gmail.com"}
+: ${git_diff_output:="diff-so-fancy | less --tabs=4 -RFX"}
 
 ##
 # Helper functions
@@ -40,4 +41,5 @@ git_set user.email $git_email
 git_set push.default simple
 git_set color.ui auto
 git_set core.editor $git_editor
+git_set core.pager $git_diff_output
 success "Git: Environment installed!"

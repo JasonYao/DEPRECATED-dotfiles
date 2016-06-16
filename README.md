@@ -46,8 +46,11 @@ Values available for being overwritten:
 - Git Username: `git_username="YOUR USERNAME HERE"`
 - Git Email: `git_email="YOUR EMAIL HERE"`
 - Git Editor: `git_editor="YOUR EDITOR HERE"`
+- Git Diff Output: `git_diff_output="Some way to parse git diff output"` **
 
-* NOTE: The default is that isServer is false, so no real need to pass this flag in entirely if it is not a server environment
+\*  NOTE: The default is that isServer is false, so no real need to pass this flag in entirely if it is not a server environment
+
+** NOTE: An example is [diff-so-fancy](https://github.com/so-fancy/diff-so-fancy)'s `diff-so-fancy | less --tabs=4 -RFX` command
 
 This will symlink the appropriate files in `.dotfiles` to the home directory.
 Everything is configured and tweaked within `~/.dotfiles`.
