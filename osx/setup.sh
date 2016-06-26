@@ -72,26 +72,7 @@ else
 fi
 
 # Upgrade homebrew if not installed
-if test ! $(which brew); then
-	# No homebrew found: installs homebrew packages
-	info "Homebrew: Installing fresh brew"
 	$dotfilesDirectory/osx/homebrew/install.sh
-else
-	# Homebrew found: updates and upgrades
-	info "Homebrew: Already installed, updating & upgrading"
-
-	if brew update &> /dev/null ; then
-		success "Homebrew: Successfully updated to the latest brew"
-	else
-		fail "Homebrew: Failed to update to the latest brew"
-	fi
-
-	if brew upgrade &> /dev/null ; then
-		success "Homebrew: Successfully upgraded to the latest brew"
-	else
-		fail "Homebrew: Failed to upgrade to the latest brew"
-	fi
-fi
 
 # Sets up development environment
 	info "Development environment: Checking environment status"
