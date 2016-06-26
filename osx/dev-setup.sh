@@ -4,12 +4,15 @@
 
 set -e
 
+# Python env stuff
 python_versions=(3.5.1 2.7.11)
 
+# Java env stuff
 declare -A java_version
 java_version[1.8]=8u92
 java_version[1.7]=7u80
 
+# Ruby env stuff
 ruby_versions=(2.3.1)
 
 # Python check and set
@@ -48,12 +51,37 @@ ruby_versions=(2.3.1)
 				info "JDK: Unable to find version ${key} in cache, downloading now"
 				wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
 					download.oracle.com/otn-pub/java/jdk/${java_version[${key}]}-b14/jdk-${java_version[${key}]}-macosx-x64.dmg -O \
-					/Users/$(whoami)/.cached_jdk/jdk-${java_version[${key}]}-macosx-x64.dmg -q --show-progress
+					$HOME/.cached_jdk/jdk-${java_version[${key}]}-macosx-x64.dmg -q --show-progress
 			else
 				success "JDK: Version ${key} is in cache"
 			fi
+
+			# Now validates the cached version with a checksum
+			info "JDK: Validating cached JDK version ${java_version[${key}]}"
+
+			# Checks if the checksum is already downloaded
+			if [[ -f $HOME/.cached_jdk/jdk-checksum-${java_version[${key}]} ]]; then
+				success "JDK: ${java_version[${key}]} checksum file already downloaded"
+			else
+				info "JDK: Downloading ${java_version[${key}]} checksum now"
+				if	wget https://www.oracle.com/webfolder/s/digest/${java_version[${key}]}checksum.html \
+					-O $HOME/.cached_jdk/jdk-checksum-${java_version[${key}]} -q --show-progress; then
+					success "JDK: ${java_version[${key}]} checksum is now downloaded"
+				else
+					fail "JDK: ${java_version[${key}]} checksum failed to download"
+				fi
+			fi
+
+			# Validates cached version
+			if [[ $(cat $HOME/.cached_jdk/jdk-checksum-${java_version[${key}]} | \
+				grep $(md5 $HOME/.cached_jdk/jdk-${java_version[${key}]}-macosx-x64.dmg | awk '{ print $4 }')) == "" ]]; then
+				fail "JDK: Cache file integrity verification failed"
+			else
+				success "JDK: Cache file integrity validation successfull"
+			fi
+
 			info "JDK: Mounting version ${key}"
-			hdiutil mount /Users/$(whoami)/.cached_jdk/jdk-${java_version[${key}]}-macosx-x64.dmg &> /dev/null
+			hdiutil mount $HOME/.cached_jdk/jdk-${java_version[${key}]}-macosx-x64.dmg &> /dev/null
 			jdk_volume_name="/Volumes/$(ls /Volumes | grep JDK)"
 			jdk_pkg_file="$jdk_volume_name/"$(ls "$jdk_volume_name" | grep JDK)
 			sudo installer -pkg "$jdk_pkg_file" -target / &> /dev/null

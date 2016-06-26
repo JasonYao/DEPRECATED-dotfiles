@@ -4,8 +4,10 @@
 
 set -e
 
-homebrew_packages=(coreutils wget autoconf automake make nano openssl pyenv pyenv-virtualenv \
-					jenv mmv cmake rbenv bash readline diff-so-fancy unrar nmap kubernetes-cli pv)
+homebrew_packages=(
+	coreutils wget autoconf automake make nano openssl pyenv pyenv-virtualenv
+	jenv mmv cmake rbenv bash readline diff-so-fancy unrar nmap kubernetes-cli pv
+)
 
 function check_homebrew_package() {
 	if [[ $(brew list | grep $1) == "" ]]; then
