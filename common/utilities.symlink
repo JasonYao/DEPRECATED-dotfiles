@@ -1,0 +1,28 @@
+# Listing commands
+	alias ls='ls --color=auto'
+	alias ll='ls -alF'
+	alias la='ls -A'
+	alias l='ls -CF'
+
+# Core commands
+	alias cp='cp -iv'
+	alias mv='mv -iv'
+	alias mkdir='mkdir -pv'
+	cd() { builtin cd "$@"; ls; }               # Always list directory contents upon 'cd'
+	alias f='open -a Finder ./'                 # f:            Opens current directory in MacOS Finder
+	mcd () { mkdir -p "$1" && cd "$1"; }        # mcd:          Makes new Dir and jumps inside
+
+# Grep commands
+	alias grep='grep --color=auto'
+	alias fgrep='fgrep --color=auto'
+	alias egrep='egrep --color=auto'
+
+# Movement commands
+	alias cd..='cd ../'                         # Go back 1 directory level (for fast typers)
+	alias ..='cd ../'                           # Go back 1 directory level
+	alias ...='cd ../../'                       # Go back 2 directory levels
+	alias .3='cd ../../../'                     # Go back 3 directory levels
+	alias .4='cd ../../../../'                  # Go back 4 directory levels
+	alias .5='cd ../../../../../'               # Go back 5 directory levels
+	alias .6='cd ../../../../../../'            # Go back 6 directory levels
+	alias ~="cd ~"                              # ~:            Go Home

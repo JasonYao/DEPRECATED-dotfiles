@@ -187,3 +187,6 @@ fi
 
 # Sets up git environment
 $dotfilesDirectory/git/setup.sh
+
+# Sets up editor environment(s)
+$dotfilesDirectory/editors/setup.sh

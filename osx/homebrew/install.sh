@@ -7,13 +7,20 @@ set -e
 homebrew_packages=(
 	coreutils wget autoconf automake make nano openssl pyenv pyenv-virtualenv
 	jenv mmv cmake rbenv bash readline diff-so-fancy unrar nmap kubernetes-cli pv
+	grep gnu-tar gnu-sed gawk gzip
 )
+
+# Any packages that requires flags upon install should be both above and here
+declare -A flagged_packages
+flagged_packages[grep]=--with-default-names
+flagged_packages[gnu-sed]=--with-default-names
+flagged_packages[gnu-tar]=--with-default-names
 
 function check_homebrew_package() {
 	if [[ $(brew list | grep $1) == "" ]]; then
 		info "Homebrew: Package $1 has not been installed yet, installing now"
 		brew tap homebrew/dupes
-		if brew install $1 &> /dev/null ; then
+		if brew install $1 ${flagged_packages[$1]} &> /dev/null ; then
 			success "Homebrew: Package $1 is now installed"
 		else
 			fail "Homebrew: Package $1 failed to install"

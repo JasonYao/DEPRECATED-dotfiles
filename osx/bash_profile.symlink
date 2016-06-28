@@ -1,30 +1,5 @@
-# OSX specific dotfiles (NOTE: bashrc should not be active)
+# OSX specific dotfiles (alias to .bashrc)
 
-# Implements colouring for OSX
-if [ -f ~/.colour ]; then
-    source ~/.colour
-fi
-
-# Enables context switching for java & python envs
-if [ -f ~/.env ]; then
-    source ~/.env
-fi
-
-# Implements server aliases
-if [ -f ~/.servers ]; then
-    source ~/.servers
-fi
-
-# Implements listing aliases
-if [ -f ~/.listing ]; then
-    source ~/.listing
-fi
-
-if [ -f ~/.listing_osx ]; then
-    source ~/.listing_osx
-fi
-
-# Implements box-specific commands for ease (e.g. differing commands on laptop verus desktop)
-if [ -f ~/.specific ]; then
-	source ~/.specific
+if [ -n "$BASH_VERSION" ] && [ -f $HOME/.bashrc ];then
+	source $HOME/.bashrc
 fi

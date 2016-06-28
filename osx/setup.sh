@@ -22,17 +22,6 @@ function install_dotfiles () {
 	done
 }
 
-function rmSymlink () {
-    symlinkToBeDeleted="$home/$1"
-    if [ -f "$symlinkToBeDeleted" ];
-    then
-        rm $home/$1
-        success "Deleted unix config file $1"
-    else
-        info "$1 has already been deleted"
-    fi
-}
-
 # Symlinks all files
 install_dotfiles
 
@@ -46,32 +35,17 @@ install_dotfiles
 		success "MotD symlink installed"
 	fi
 
-# Removes unix config files
-	rmSymlink .bashrc
-	rmSymlink .nanorc_unix
-	rmSymlink .listing_unix
-
-# Sets up correct nano settings
-	nanorc_file="$home/.nanorc"
-	if [ -f "$nanorc_file" ];
-	then
-		info ".nanorc is already set"
-	else
-		ln -s $home/.nanorc_osx $home/.nanorc
-		success "Symlinked .nanorc for osx"
-	fi
-
 # OSX dependency installation
-info "OSX: installing dependencies"
+	info "OSX: installing dependencies"
 
 # Sets OSX defaults
-if $dotfilesDirectory/osx/set-defaults.sh ; then
-	success "OSX: Sane defaults installed"
-else
-	fail "OSX: Failed to set sane defaults"
-fi
+	if $dotfilesDirectory/osx/set-defaults.sh ; then
+		success "OSX: Sane defaults installed"
+	else
+		fail "OSX: Failed to set sane defaults"
+	fi
 
-# Upgrade homebrew if not installed
+# Installs/upgrades homebrew
 	$dotfilesDirectory/osx/homebrew/install.sh
 
 # Sets up development environment
