@@ -4,46 +4,42 @@
 
 set -e
 
-: ${username:="jason"}
-: ${password:="f%@nKc5K9kfgMdWHdCLsgvDjTuJXsc3H"}
-: ${isServer:=false}
-: ${defaultShell:="bash"}
-: ${dotfilesDirectory:="/home/$(whoami)/.dotfiles"}
-: ${sshPublicKey:="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhNCsxxzqX4c0mKcEmuiDdjnaHg2eQtmaTR3RWolf8F Jason@Jasons-MacBook-Pro.local"}
+: "${username:="jason"}"
+: "${password:="f%@nKc5K9kfgMdWHdCLsgvDjTuJXsc3H"}"
+: "${isServer:=false}"
+: "${defaultShell:="bash"}"
+: "${dotfilesDirectory:="/home/$(whoami)/.dotfiles"}"
+: "${sshPublicKey:="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhNCsxxzqX4c0mKcEmuiDdjnaHg2eQtmaTR3RWolf8F Jason@Jasons-MacBook-Pro.local"}"
 
-##
+###
 # Helper functions
 ##
 function info () {
-	printf "\r  [ \033[00;34m..\033[0m ] $1\n"
+	printf "\r  [ \033[00;34m..\033[0m ] %s\n" "$1"
 }
-
 function user () {
-	printf "\r  [ \033[0;33m?\033[0m ] $1 "
+	printf "\r  [ \033[0;33m??\033[0m ] %s " "$1"
 }
-
 function success () {
-	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
+	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"
 }
-
 function warn () {
-  printf "\r\033[2K  [\033[0;31mWARNING\033[0m] $1\n"
+  printf "\r\033[2K  [\033[0;31mWARNING\033[0m] %s\n" "$1"
 }
-
 function fail () {
-  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
+  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
   echo ''
-  exit
+  exit 1
 }
 
 function checkAndInstallPackage ()
 {
     info "Checking for $1"
-    if dpkg -s $1 > /dev/null 2>&1 ; then
+    if dpkg -s "$1" > /dev/null 2>&1 ; then
         success "$1 is already installed"
     else
         info "$1 not found, installing now"
-        if sudo apt-get install $1 -y > /dev/null ; then
+        if sudo apt-get install "$1" -y > /dev/null ; then
             success "$1 successfully installed"
         else
             fail "$1 failed to install"
@@ -56,7 +52,7 @@ function change_substring ()
 	search=$1
 	replace=$2
 	file=$3
-	sed -i "s/${search}/${replace}/g" ${file}
+	sed -i "s/${search}/${replace}/g" "${file}"
 }
 
 function checkAndSetAutoSettings ()
@@ -66,7 +62,7 @@ function checkAndSetAutoSettings ()
 
 function checkAndAppendSettings ()
 {
-	if [[ $(cat /etc/apt/apt.conf.d/20auto-upgrades | grep "$1") == "" ]]; then
+	if [[ $(grep "$1" "/etc/apt/apt.conf.d/20auto-upgrades") == "" ]]; then
 		echo "$1" >> /etc/apt/apt.conf.d/20auto-upgrades
 	fi
 }
@@ -103,13 +99,13 @@ function autoRemove
 function setupUserBaseline
 {
 # Adds a new user if it doesn't exist
-if [[ $(cat /etc/passwd | cut -d: -f1 | grep $username) = "" ]]; then
+if [[ $(grep "$username" "$(cut -d: -f1 < /etc/passwd)") == "" ]]; then
     # Checks for input password for user, otherwise goes with default
     if [[ $password == "f%@nKc5K9kfgMdWHdCLsgvDjTuJXsc3H" ]]; then
-        warn "Warning, default password was used, please change user password to something else via `sudo passwd $username`"
+        warn "Warning: Default password was used, please change user password to something else via \`sudo passwd $username\`"
     fi
 
-    useradd -m -p "$password" -s $(which $defaultShell) $username
+    useradd -m -p "$password" -s "$(which "$defaultShell")" "$username"
     echo "$username:$password" | chpasswd
     success "Created user $username"
 else
@@ -117,8 +113,8 @@ else
 fi
 
 # Adds the user to the sudo group if it hasn't been done already
-if [[ $(grep root /etc/group | grep $username) == "" ]]; then
-    gpasswd -a $username sudo > /dev/null
+if [[ $(grep root /etc/group | grep "$username") == "" ]]; then
+    gpasswd -a "$username" sudo > /dev/null
     success "User $username has been added to the sudo group"
 else
     success "User $username has already been added to the sudo group"
@@ -143,8 +139,8 @@ function setupSSH
     success "SSHD: SSH root login is denied"
 
     # Allows ssh access for the user
-    if [[ ! $(cat /etc/ssh/sshd_config | grep "AllowUsers $username") == "" ]]; then
-        if [[ $(cat /etc/ssh/sshd_config | grep "AllowUsers") == "" ]]; then
+		if [[ ! $(grep "AllowUsers $username" "/etc/ssh/sshd_config") ]]; then
+				if [[ $(grep "AllowUsers" "/etc/ssh/sshd_config") == "" ]]; then
             echo "AllowUsers $username" >> /etc/ssh/sshd_config
         else
             change_substring "AllowUsers" "AllowUsers $username" /etc/ssh/sshd_config
@@ -232,12 +228,14 @@ function setupFail2Ban
 	# Creates a local jail to use ufw
 	if [ ! -f "/etc/fail2ban/jail.local" ]; then
 		info "Fail2Ban: Creating local jail"
-		echo "[DEFAULT]" >> /etc/fail2ban/jail.local
-		echo "ignoreip = 127.0.0.1/8" >> /etc/fail2ban/jail.local
-		echo "banaction = ufw" >> /etc/fail2ban/jail.local
-		echo "maxRetry = 5" >> /etc/fail2ban/jail.local
-		echo "findtime = 600" >> /etc/fail2ban/jail.local
-		echo "bantime = 7200" >> /etc/fail2ban/jail.local
+		{
+			echo "[DEFAULT]"
+			echo "ignoreip = 127.0.0.1/8"
+			echo "banaction = ufw"
+			echo "maxRetry = 5"
+			echo "findtime = 600"
+			echo "bantime = 7200"
+		} >> /etc/fail2ban/jail.local
 		success "Fail2Ban: Local jail created"
 	fi
 
@@ -263,14 +261,14 @@ fi
 # Downloads and installs the dotfiles to the newly created user's directory
 if [[ ! -d "$dotfilesDirectory" ]]; then
 	info "Dotfiles: Downloading missing dotfiles"
-	if git clone --recursive https://github.com/JasonYao/dotfiles.git $dotfilesDirectory &> /dev/null ; then
+	if git clone --recursive https://github.com/JasonYao/dotfiles.git "$dotfilesDirectory" &> /dev/null ; then
 		success "Dotfiles: Successfully downloaded dotfiles"
 	else
 		fail "Dotfiles: Unable to download dotfiles"
 	fi
 else
 	info "Dotfiles: Updating prior downloaded dotfiles now"
-	if git -C $dotfilesDirectory pull &> /dev/null ; then
+	if git -C "$dotfilesDirectory" pull &> /dev/null ; then
 		success "Dotfiles: Successfully updated dotfiles"
 	else
 		fail "Dotfiles: Unable to update dotfiles"
@@ -278,11 +276,11 @@ else
 fi
 
 # Sets up SSH key access for the user
-if [[ ! -d "$home/.ssh" ]]; then
-    mkdir $home/.ssh
-    chmod 700 $home/.ssh
-    echo $sshPublicKey >> $home/.ssh/authorized_keys
-    chmod 600 $home/.ssh/authorized_keys
-    chown -R $username:$username $home/.ssh
+if [[ ! -d "$HOME/.ssh" ]]; then
+    mkdir "$HOME"/.ssh
+    chmod 700 "$HOME"/.ssh
+    echo "$sshPublicKey" >> "$HOME"/.ssh/authorized_keys
+    chmod 600 "$HOME"/.ssh/authorized_keys
+    chown -R "$username":"$username" "$HOME"/.ssh
     success "Installed SSH key access for $username"
 fi

@@ -3,4 +3,4 @@
 set -e
 
 # Sets up the nano editor
-	$dotfilesDirectory/editors/nano.sh
+	"$dotfilesDirectory"/editors/nano.sh

@@ -6,10 +6,9 @@
 
 set -e
 
-: ${username:="$(whoami)"}
-: ${defaultShell:="bash"}
-: ${dotfilesDirectory:="$HOME/.dotfiles"}
-home="$dotfilesDirectory/.."
+: "${username:="$(whoami)"}"
+: "${defaultShell:="bash"}"
+: "${dotfilesDirectory:="$HOME/.dotfiles"}"
 
 function install_dotfiles () {
 	info 'Installing dotfiles'
@@ -17,7 +16,7 @@ function install_dotfiles () {
 
 	for src in $(find -H "$dotfilesDirectory" -maxdepth 3 -name '*.symlink')
 	do
-		dst="$home/.$(basename "${src%.*}")"
+		dst="$HOME/.$(basename "${src%.*}")"
 		link_file "$src" "$dst"
 	done
 }
@@ -31,7 +30,7 @@ install_dotfiles
 	then
 		info "MotD symlink already installed"
 	else
-		sudo ln -s $home/.motd /etc/motd
+		sudo ln -s "$HOME"/.motd /etc/motd
 		success "MotD symlink installed"
 	fi
 
@@ -39,18 +38,18 @@ install_dotfiles
 	info "OSX: installing dependencies"
 
 # Sets OSX defaults
-	if $dotfilesDirectory/osx/set-defaults.sh ; then
+	if "$dotfilesDirectory"/osx/set-defaults.sh ; then
 		success "OSX: Sane defaults installed"
 	else
 		fail "OSX: Failed to set sane defaults"
 	fi
 
 # Installs/upgrades homebrew
-	$dotfilesDirectory/osx/homebrew/install.sh
+	"$dotfilesDirectory"/osx/homebrew/install.sh
 
 # Sets up development environment
 	info "Development environment: Checking environment status"
-	if $dotfilesDirectory/osx/dev-setup.sh; then
+	if "$dotfilesDirectory"/osx/dev-setup.sh; then
 		success "Development environment: All environments are installed and ready"
 	else
 		fail "Development environment: Failed to install all environments correctly"
@@ -58,7 +57,7 @@ install_dotfiles
 
 # Sets up iTerm environment
 	info "Terminal: Setting defaults"
-	if $dotfilesDirectory/osx/terminal/setup.sh; then
+	if "$dotfilesDirectory"/osx/terminal/setup.sh; then
 		success "Terminal: Defaults successfully set"
 	else
 		fail "Terminal: Defaults failed to be set"

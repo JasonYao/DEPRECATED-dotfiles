@@ -16,17 +16,17 @@ java_version[1.7]=7u80
 ruby_versions=(2.3.1)
 
 # Python check and set
-	for version in ${python_versions[@]}; do
-		if [[ $(pyenv versions | grep ${version}) == "" ]]; then
+	for version in "${python_versions[@]}"; do
+		if [[ $(pyenv versions | grep "${version}") == "" ]]; then
 			info "Pyenv: Python version ${version} is not installed yet, installing now"
-			if [[ $(echo $CFLAGS) == "" ]]; then
+			if [[ $CFLAGS == "" ]]; then
 				info "Pyenv: CFLAGS not yet set, running now"
-				if CFLAGS="-I$(xcrun --show-sdk-path)/usr/include" pyenv install ${version} &> /dev/null ; then
+				if CFLAGS="-I$(xcrun --show-sdk-path)/usr/include" pyenv install "${version}" &> /dev/null ; then
 					success "Pyenv: Python version ${version} is now installed"
 				else
 					fail "Pyenv: Python version ${version} failed to install"
 				fi
-			elif pyenv install ${version} &> /dev/null ; then
+			elif pyenv install "${version}" &> /dev/null ; then
 				success "Pyenv: Python version ${version} is now installed"
 			else
 				fail "Pyenv: Python version ${version} failed to install"
@@ -37,21 +37,21 @@ ruby_versions=(2.3.1)
 	done
 
 # Java check and set
-	for key in ${!java_version[@]}; do
+	for key in "${!java_version[@]}"; do
 		# First checks for whether the JDK is installed
-		if [[ $(ls /Library/Java/JavaVirtualMachines | grep ${key}) == "" ]]; then
+		if [[ $(echo /Library/Java/JavaVirtualMachines/* | grep ${key}) == "" ]]; then
 			info "JDK: Version ${key} is not installed, installing now"
 			info "JDK: Checking for cached JDK installations"
-			if [[ ! -d /Users/$(whoami)/.cached_jdk ]]; then
-				mkdir /Users/$(whoami)/.cached_jdk
+			if [[ ! -d $HOME/.cached_jdk ]]; then
+				mkdir "$HOME"/.cached_jdk
 			fi
 
 			# Now checks the cache for an old version
-			if [[ ! -f /Users/$(whoami)/.cached_jdk/jdk-${java_version[${key}]}-macosx-x64.dmg ]]; then
+			if [[ ! -f $HOME/.cached_jdk/jdk-${java_version[${key}]}-macosx-x64.dmg ]]; then
 				info "JDK: Unable to find version ${key} in cache, downloading now"
 				wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
 					download.oracle.com/otn-pub/java/jdk/${java_version[${key}]}-b14/jdk-${java_version[${key}]}-macosx-x64.dmg -O \
-					$HOME/.cached_jdk/jdk-${java_version[${key}]}-macosx-x64.dmg -q --show-progress
+					"$HOME"/.cached_jdk/jdk-${java_version[${key}]}-macosx-x64.dmg -q --show-progress
 			else
 				success "JDK: Version ${key} is in cache"
 			fi
@@ -65,7 +65,7 @@ ruby_versions=(2.3.1)
 			else
 				info "JDK: Downloading ${java_version[${key}]} checksum now"
 				if	wget https://www.oracle.com/webfolder/s/digest/${java_version[${key}]}checksum.html \
-					-O $HOME/.cached_jdk/jdk-checksum-${java_version[${key}]} -q --show-progress; then
+					-O "$HOME"/.cached_jdk/jdk-checksum-${java_version[${key}]} -q --show-progress; then
 					success "JDK: ${java_version[${key}]} checksum is now downloaded"
 				else
 					fail "JDK: ${java_version[${key}]} checksum failed to download"
@@ -73,17 +73,16 @@ ruby_versions=(2.3.1)
 			fi
 
 			# Validates cached version
-			if [[ $(cat $HOME/.cached_jdk/jdk-checksum-${java_version[${key}]} | \
-				grep $(md5 $HOME/.cached_jdk/jdk-${java_version[${key}]}-macosx-x64.dmg | awk '{ print $4 }')) == "" ]]; then
+			if [[ $(grep "$(md5 "$HOME"/.cached_jdk/jdk-${java_version[${key}]}-macosx-x64.dmg | awk '{ print $4 }')" "$HOME"/.cached_jdk/jdk-checksum-${java_version[${key}]}) == "" ]]; then
 				fail "JDK: Cache file integrity verification failed"
 			else
 				success "JDK: Cache file integrity validation successfull"
 			fi
 
 			info "JDK: Mounting version ${key}"
-			hdiutil mount $HOME/.cached_jdk/jdk-${java_version[${key}]}-macosx-x64.dmg &> /dev/null
-			jdk_volume_name="/Volumes/$(ls /Volumes | grep JDK)"
-			jdk_pkg_file="$jdk_volume_name/"$(ls "$jdk_volume_name" | grep JDK)
+			hdiutil mount "$HOME"/.cached_jdk/jdk-${java_version[${key}]}-macosx-x64.dmg &> /dev/null
+			jdk_volume_name="/Volumes/$(echo /Volumes/* | grep JDK)"
+			jdk_pkg_file="$jdk_volume_name/"$(echo "$jdk_volume_name"/* | grep JDK)
 			sudo installer -pkg "$jdk_pkg_file" -target / &> /dev/null
 			hdiutil unmount "$jdk_volume_name" &> /dev/null
 			success "JDK: Version ${key} is now installed"
@@ -94,7 +93,7 @@ ruby_versions=(2.3.1)
 		# Checks for whether Jenv is aware of the installed JDK
 		if [[ $(jenv versions | grep ${key}) == "" ]]; then
 			info "Jenv: Java version ${key} is not installed yet, installing now"
-			jdk="/Library/Java/JavaVirtualMachines/"$(ls /Library/Java/JavaVirtualMachines/ | grep ${key})"/Contents/Home/"
+			jdk="/Library/Java/JavaVirtualMachines/$(echo /Library/Java/JavaVirtualMachines/* | grep ${key})/Contents/Home/"
 			jenv add "$jdk" &>/dev/null
 			success "Jenv: Java version ${key} is now installed"
 		else
@@ -103,10 +102,10 @@ ruby_versions=(2.3.1)
 	done
 
 # Ruby check and set
-	for version in ${ruby_versions[@]}; do
-		if [[ $(rbenv versions | grep ${version}) == "" ]]; then
+	for version in "${ruby_versions[@]}"; do
+		if [[ $(rbenv versions | grep "${version}") == "" ]]; then
 			info "Rbenv: Ruby version ${version} is not installed yet, installing now"
-			if rbenv install ${version} &> /dev/null ; then
+			if rbenv install "${version}" &> /dev/null ; then
 				success "Rbenv: Ruby version ${version} is now installed"
 			else
 				fail "Rbenv: Ruby version ${version} failed to install"

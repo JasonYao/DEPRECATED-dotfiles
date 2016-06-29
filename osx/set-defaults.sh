@@ -8,8 +8,8 @@ firewall="/usr/libexec/ApplicationFirewall/socketfilterfw"
 
 # Usage: checkAndSetFirewall "--getblockall" "DISABLED" "--setblockall on" "default to deny incoming traffic" "Default to deny incoming traffic"
 function checkAndSetFirewall () {
-	if [[ $($firewall $1 | grep "$2") != "" ]]; then
-		if sudo $firewall $3 > /dev/null ; then
+	if [[ $($firewall "$1" | grep "$2") != "" ]]; then
+		if sudo $firewall "$3" > /dev/null ; then
 			success "Firewall: Successfully set $4"
 		else
 			fail "Firewall: Failed to set $4"
@@ -25,10 +25,10 @@ function checkAndSetFirewall () {
 # $4 = target_type_and_value
 # $5 = message_success
 function check_and_set_default() {
-	if [[ $(defaults read $1) == $2 ]]; then
+	if [[ $(defaults read $1) == "$2" ]]; then
 		success "$3"
 	else
-		defaults write $1 $4
+		defaults write "$1" "$4"
 		success "$5"
 	fi
 }
@@ -42,7 +42,7 @@ function check_and_set_default() {
 function check_and_set_dock() {
 	if [[ $(defaults read com.apple.Dock | grep "$1 = $2") == "" ]]; then
 		info "$3"
-		defaults write com.apple.Dock $1 $4
+		defaults write com.apple.Dock "$1" "$4"
 		killall Dock
 		success "$5"
 	else
@@ -75,14 +75,13 @@ function repopulate_all_dock_apps() {
 # Does this once instead of doing all over each time
 valid_apps=("launchpad" "Notes" "iTunes" "appstore" "systempreferences" "firefox")
 invert_string="grep -v"
-is_first=0
 
-for app in ${valid_apps[@]}; do
+for app in "${valid_apps[@]}"; do
     invert_string+=" -e \"${app}\""
 done
 
 function check_and_remove_bad_dock_apps() {
-	if [[ $(defaults read com.apple.Dock persistent-apps | grep "bundle-identifier" | eval $invert_string) != "" ]]; then
+	if [[ $(defaults read com.apple.Dock persistent-apps | grep "bundle-identifier" | eval "$invert_string") != "" ]]; then
 		info "Dock: Contains non-default applications, killing off now"
 		defaults delete com.apple.Dock persistent-apps
 		killall Dock
@@ -233,8 +232,8 @@ function check_and_manage_dock_folders() {
 
 # Disables indexing and searching of the bootcamp volume if it's named bootcamp (case insensitive)
 	if [[ $(diskutil list | grep -i bootcamp) != "" ]]; then
-		if [[ $(sudo mdutil -s /Volumes/$(diskutil list | grep -io bootcamp) | grep disabled) == "" ]]; then
-			sudo mdutil -i off -d /Volumes/$(diskutil list | grep -io bootcamp)
+		if [[ $(sudo mdutil -s /Volumes/"$(diskutil list | grep -io bootcamp)" | grep disabled) == "" ]]; then
+			sudo mdutil -i off -d /Volumes/"$(diskutil list | grep -io bootcamp)"
 			success "Spotlight: Disabled indexing & searching of bootcamp partition"
 		else
 			success "Spotlight: Indexing & searching of bootcamp partition already disabled"

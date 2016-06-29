@@ -8,29 +8,29 @@ set -e
 # Helper functions
 ##
 function info () {
-	printf "\r  [ \033[00;34m..\033[0m ] $1\n"
+	printf "\r  [ \033[00;34m..\033[0m ] %s\n" "$1"
 }
 function user () {
-	printf "\r  [ \033[0;33m?\033[0m ] $1 "
+	printf "\r  [ \033[0;33m??\033[0m ] %s " "$1"
 }
 function success () {
-	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
+	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"
 }
 function warn () {
-  printf "\r\033[2K  [\033[0;31mWARNING\033[0m] $1\n"
+  printf "\r\033[2K  [\033[0;31mWARNING\033[0m] %s\n" "$1"
 }
 function fail () {
-  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
+  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
   echo ''
   exit 1
 }
 function checkAndInstallPackage () {
     info "Checking for $1"
-    if dpkg -s $1 > /dev/null 2>&1 ; then
+    if dpkg -s "$1" > /dev/null 2>&1 ; then
         success "$1 is already installed"
     else
         info "$1 not found, installing now"
-        if sudo apt-get install $1 -y &> /dev/null ; then
+        if sudo apt-get install "$1" -y &> /dev/null ; then
             success "$1 successfully installed"
         else
             fail "$1 failed to install"
@@ -41,16 +41,15 @@ function checkAndInstallPackage () {
 function link_file () {
   local src=$1 dst=$2
 
-  local overwrite= backup= skip=
-  local action=
+  local overwrite='' backup='' skip=''
+  local action=''
 
-  if [ -f "$dst" -o -d "$dst" -o -L "$dst" ]
+	if [ -f "$dst" ] || [ -d "$dst" ] || [ -L "$dst" ]
   then
 
     if [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ]
     then
-
-      local currentSrc="$(readlink $dst)"
+      local currentSrc=$(readlink "$dst")
 
       if [ "$currentSrc" == "$src" ]
       then
@@ -59,9 +58,9 @@ function link_file () {
 
       else
 
-        user "File already exists: $dst ($(basename "$src")), what do you want to do?\n\
+        user "File already exists: $dst ($(basename "$src")), what do you want to do?
         [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
-        read -n 1 action
+        read -rn 1 action
 
         case "$action" in
           o )
@@ -117,17 +116,17 @@ function link_file () {
   fi
 }
 
-: ${username:="$(whoami)"}
-: ${password:=""}
-: ${isServer:=false}
-: ${defaultShell:="bash"}
-: ${dotfilesDirectory:="$HOME/.dotfiles"}
-: ${sshPublicKey:="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhNCsxxzqX4c0mKcEmuiDdjnaHg2eQtmaTR3RWolf8F Jason@Jasons-MacBook-Pro.local"}
-home="$dotfilesDirectory/.."
-: ${git_editor:="nano"}
-: ${git_username:="Jason Yao"}
-: ${git_email:="jasony.edu@gmail.com"}
+: "${username:="$(whoami)"}"
+: "${password:=""}"
+: "${isServer:=false}"
+: "${defaultShell:="bash"}"
+: "${dotfilesDirectory:="$HOME/.dotfiles"}"
+: "${sshPublicKey:="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhNCsxxzqX4c0mKcEmuiDdjnaHg2eQtmaTR3RWolf8F Jason@Jasons-MacBook-Pro.local"}"
+: "${git_editor:="nano"}"
+: "${git_username:="Jason Yao"}"
+: "${git_email:="jasony.edu@gmail.com"}"
 
+home="$dotfilesDirectory/.."
 if [[ "$dotfilesDirectory" == "/root/.dotfiles" ]]; then
 	dotfilesDirectory="/home/$username/.dotfiles"
 	home="$dotfilesDirectory/.."
@@ -152,41 +151,41 @@ if [[ ! -d "$dotfilesDirectory" ]]; then
 	# No dotfiles found, download now
 	if [ "$(uname -s)" == "Darwin" ]; then
 		# OSX: Downloads dotfiles
-		if git clone --recursive https://github.com/JasonYao/dotfiles.git $dotfilesDirectory &> /dev/null; then
+		if git clone --recursive https://github.com/JasonYao/dotfiles.git "$dotfilesDirectory" &> /dev/null; then
 			success "Downloaded dotfiles successfully"
 		else
 			fail "Failed to download dotfiles, either internet connection or SSH keys aren't activated"
 		fi
 		info "OS detected was: OSX, running OSX setup script now"
-		bash $dotfilesDirectory/osx/setup.sh 2>&1
+		bash "$dotfilesDirectory"/osx/setup.sh 2>&1
 	else
 		# Unix: Downloads dotfiles
 		info "Downloading init script"
 		wget https://raw.githubusercontent.com/JasonYao/dotfiles/master/unix/init.sh > /dev/null 2>&1 && \
 		username=$username password=$password isServer=$isServer defaultShell=$defaultShell dotfilesDirectory=$dotfilesDirectory sshPublicKey=$sshPublicKey \
 		bash init.sh; rm -rf init.sh
-		chown -R $username:$username $dotfilesDirectory
+		chown -R "$username":"$username" "$dotfilesDirectory"
 		info "OS detected was: Unix, running unix setup script now"
-		$dotfilesDirectory/unix/setup.sh 2>&1
+		"$dotfilesDirectory"/unix/setup.sh 2>&1
 	fi
 else
 	# Dotfiles have been found, updates
 	info "Dotfiles already downloaded, updating now"
-	if  git -C $dotfilesDirectory pull --quiet &&  git -C $dotfilesDirectory submodule update --remote &> /dev/null; then
+	if  git -C "$dotfilesDirectory" pull --quiet &&  git -C "$dotfilesDirectory" submodule update --remote &> /dev/null; then
 		success "Dotfiles: Successfully updated dotfiles"
 	else
 		fail "Dotfiles: Unable to update dotfiles"
 	fi
 
 	if [ "$(uname -s)" == "Darwin" ]; then
-		$dotfilesDirectory/osx/setup.sh 2>&1
+		"$dotfilesDirectory"/osx/setup.sh 2>&1
 	else
-		$dotfilesDirectory/unix/setup.sh 2>&1
+		"$dotfilesDirectory"/unix/setup.sh 2>&1
 	fi
 fi
 
 # Sets up git environment
-$dotfilesDirectory/git/setup.sh
+"$dotfilesDirectory"/git/setup.sh
 
 # Sets up editor environment(s)
-$dotfilesDirectory/editors/setup.sh
+"$dotfilesDirectory"/editors/setup.sh
