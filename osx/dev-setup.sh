@@ -5,7 +5,7 @@
 set -e
 
 # Python env stuff
-python_versions=(3.5.1 2.7.11)
+python_versions=(3.5.2 2.7.12)
 
 # Java env stuff
 declare -A java_version
