@@ -19,17 +19,26 @@ ruby_versions=(2.3.1)
 	for version in "${python_versions[@]}"; do
 		if [[ $(pyenv versions | grep "${version}") == "" ]]; then
 			info "Pyenv: Python version ${version} is not installed yet, installing now"
-			if [[ $CFLAGS == "" ]]; then
-				info "Pyenv: CFLAGS not yet set, running now"
+
+			# Checks if pyenv has the correct version first
+			info "Pyenv: Checking for python version ${version}"
+			if [[ $(pyenv install --list | grep "${version}") == "" ]]; then
+				fail "Pyenv: Python version ${version} was not found, please check it is valid and pyenv is up to date"
+			else
+				success "Pyenv: Python version ${version} was found"
+			fi
+
+			# Runs through normal install if possible, using CFlag if not
+			info "Pyenv: Attempting normal install"
+			if pyenv install "${version}" &> /dev/null ; then
+				success "Pyenv: Python version ${version} is now installed"
+			else
+				warn "Pyenv: Python version ${version} failed to install, attempting to run with CFlags"
 				if CFLAGS="-I$(xcrun --show-sdk-path)/usr/include" pyenv install "${version}" &> /dev/null ; then
 					success "Pyenv: Python version ${version} is now installed"
 				else
 					fail "Pyenv: Python version ${version} failed to install"
 				fi
-			elif pyenv install "${version}" &> /dev/null ; then
-				success "Pyenv: Python version ${version} is now installed"
-			else
-				fail "Pyenv: Python version ${version} failed to install"
 			fi
 		else
 			success "Pyenv: Python version ${version} is already installed"
@@ -105,6 +114,17 @@ ruby_versions=(2.3.1)
 	for version in "${ruby_versions[@]}"; do
 		if [[ $(rbenv versions | grep "${version}") == "" ]]; then
 			info "Rbenv: Ruby version ${version} is not installed yet, installing now"
+
+			# Checks if pyenv has the correct version first
+			info "Rbenv: Checking for ruby version ${version}"
+			if [[ $(rbenv install --list | grep "${version}") == "" ]]; then
+				fail "Rbenv: Ruby version ${version} was not found, please check it is valid and rbenv is up to date"
+			else
+				success "Rbenv: Ruby version ${version} was found"
+			fi
+
+			# Tries a normal install
+			info "Rbenv: Attempting normal install now"
 			if rbenv install "${version}" &> /dev/null ; then
 				success "Rbenv: Ruby version ${version} is now installed"
 			else

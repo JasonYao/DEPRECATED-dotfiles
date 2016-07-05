@@ -32,8 +32,24 @@ function check_homebrew_package() {
 
 # Installs homebrew if not installed
 	if test ! "$(which brew)" ; then
+		info "Homebrew: Package manager was not found, installing now"
 		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 		success "Homebrew: successfully installed"
+	fi
+
+# Updates and upgrades brew packages
+	info "Homebrew: Updating brews now"
+	if brew update; then
+		success  "Homebrew: Brews have been updated"
+	else
+		fail "Homebrew: Brews failed to be updated"
+	fi
+
+	info "Homebrew: Upgrading brews now"
+	if brew upgrade; then
+		success "Homebrew: Brews have been upgraded"
+	else
+		fail "Homebrew: Brews failed to upgrade"
 	fi
 
 # Checks and installs any missing packages
