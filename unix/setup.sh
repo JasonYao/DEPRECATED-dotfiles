@@ -87,3 +87,7 @@ else
 	ln -s "$dotfilesDirectory"/bin/* /home/"$username"/.bin
 	success ".bin: Private bin is now set up"
 fi
+
+# Sets up dev environments
+	"$dotfilesDirectory"/unix/env-setup.sh
+	"$dotfilesDirectory"/common/dev-setup.sh

@@ -49,7 +49,7 @@ install_dotfiles
 
 # Sets up development environment
 	info "Development environment: Checking environment status"
-	if "$dotfilesDirectory"/osx/dev-setup.sh; then
+	if "$dotfilesDirectory"/common/dev-setup.sh; then
 		success "Development environment: All environments are installed and ready"
 	else
 		fail "Development environment: Failed to install all environments correctly"

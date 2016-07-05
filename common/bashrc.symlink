@@ -24,17 +24,18 @@
 		source $HOME/.specific
 	fi
 
+# Enables context switching for java & python envs
+	if [ -f $HOME/.env ]; then
+		source $HOME/.env
+	fi
+
 # Domain specific
 	if [[ $(uname -s | grep "Linux") != "" ]]; then
 		# Linux only
 		cat ~/.motd # Sets up MotD
-		eval `ssh-agent` # Starts the ssh agent
+		eval `ssh-agent` > /dev/null && echo "SSH agent enabled" # Starts the ssh agent
 	else
 		# OSX only
-		# Enables context switching for java & python envs
-		if [ -f $HOME/.env ]; then
-			source $HOME/.env
-		fi
 
 		# Implements using GNU tools over baked in ones
 		PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
