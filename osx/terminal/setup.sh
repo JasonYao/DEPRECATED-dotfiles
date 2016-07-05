@@ -8,7 +8,7 @@ iterm_info_plist="/Applications/iTerm.app/Contents/Info.plist"
 iterm_download_link="https://iterm2.com/downloads/stable/iTerm2-3_0_4.zip"
 
 # Sets up fonts
-	if [[ $(echo /Users/Jason/Library/Fonts/* | grep FreeMono) == "" ]]; then
+	if [[ $(echo $HOME/Library/Fonts/* | grep FreeMono) == "" ]]; then
 		info "Font: FreeMono is not installed yet, installing now"
 		cp "$dotfilesDirectory"/osx/terminal/font/FreeMono.ttf "$HOME"/Library/Fonts/
 		success "Font: FreeMono is now installed"

@@ -112,11 +112,16 @@ function check_and_manage_dock_folders() {
 	check_and_set_default "NSGlobalDomain KeyRepeat" 0 "Keyboard: 0-delay key repeat has already been enabled" "-int 0" "Keyboard: 0-delay key repeat has been enabled"
 
 # Sets the Finder prefs for showing a few different volumes on the Desktop
-	check_and_set_default "com.apple.finder ShowHardDrivesOnDesktop" 1 "Finder: Show hard drives on desktop is already enabled" "-bool true" "Finder: Show hard drives on desktop is now enabled"
+	check_and_set_default "com.apple.finder ShowHardDrivesOnDesktop" 1 "Finder: Show hard drives on desktop is already enabled" "-bool true" \
+		"Finder: Show hard drives on desktop is now enabled"
 	check_and_set_default "com.apple.finder ShowExternalHardDrivesOnDesktop" 1 "Finder: Show external hard drives on desktop is already enabled" "-bool true" \
 		"Finder: Show external hard drives on desktop is now enabled"
 	check_and_set_default "com.apple.finder ShowRemovableMediaOnDesktop" 1 "Finder: Show removable media on desktop is already been enabled" "-bool true" \
 		"Finder: Show removable media on desktop is now enabled"
+
+# Empty Trash securely by default
+	check_and_set_default "com.apple.finder EmptyTrashSecurely" 1 "Finder: Securely trash delete is already enabled" "-bool true" \
+		"Finder: Secure trash delete is now enabled"
 
 # Sets battery percentage to be shown
 	check_and_set_default "com.apple.menuextra.battery ShowPercent" 1 "Battery: Show percent battery remaining is already enabled" "-bool true" "Battery: Show percent battery is now enabled"

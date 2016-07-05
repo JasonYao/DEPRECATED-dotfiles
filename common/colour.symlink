@@ -1,7 +1,7 @@
 # Colour output activation
-COLOR_BOLD="[\e[1m]"
-COLOR_DEFAULT="[\e[0m]"
-PS1="$COLOR_BOLD\u@\h \W \$ $COLOR_DEFAULT"
+	COLOR_BOLD="[\e[1m]"
+	COLOR_DEFAULT="[\e[0m]"
+	PS1="$COLOR_BOLD\u@\h \W \$ $COLOR_DEFAULT"
 
-export CLICOLOR=1
-export LSCOLORS=ExFxBxDxCxegedabagacad
+# Enables different colouring
+	LS_COLORS=$LS_COLORS:'di=0;34:ln=35:or=41:ex=31:*.png=32' ; export LS_COLORS
