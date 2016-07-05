@@ -5,7 +5,7 @@
 set -e
 
 iterm_info_plist="/Applications/iTerm.app/Contents/Info.plist"
-iterm_download_link="https://iterm2.com/downloads/beta/iTerm2-3_0_1-preview.zip"
+iterm_download_link="https://iterm2.com/downloads/stable/iTerm2-3_0_4.zip"
 
 # Sets up fonts
 	if [[ $(echo /Users/Jason/Library/Fonts/* | grep FreeMono) == "" ]]; then
@@ -21,12 +21,26 @@ iterm_download_link="https://iterm2.com/downloads/beta/iTerm2-3_0_1-preview.zip"
 		success "iTerm: Application has been already installed"
 	else
 		info "iTerm: Application has not been installed, installing now"
-		wget $iterm_download_link -O "$HOME"/Desktop/iTerm.zip -q --show-progress
+
+		# Checks cache for already downloaded application
+		info "iTerm: Checking cache for prior download"
+		if [[ -f $HOME/.dotfiles_cache/iTerm.zip ]]; then
+			success "iTerm: Cached version found"
+		else
+			info "iTerm: No cached version found, downloading now"
+			if wget $iterm_download_link -O $HOME/.dotfiles_cache/iTerm.zip -q --show-progress ; then
+				success "iTerm: Successfully downloaded iTerm"
+			else
+				fail "iTerm: Failed to download iTerm"
+			fi
+		fi
+
 		# Since unzip didn't end up decompressing correctly (application image was not there), we'll use the system's Archive Utility.app instead
-		open -a /System/Library/CoreServices/Applications/Archive\ Utility.app/ "$HOME"/Desktop/iTerm.zip
+		open -a /System/Library/CoreServices/Applications/Archive\ Utility.app/ $HOME/.dotfiles_cache/iTerm.zip
+
 		# Needs a wait since mv command doesn't wait for archive utility to unzip, only waits for it to open
 		sleep 3
-		mv ~/Desktop/iTerm.app /Applications
+		mv $HOME/.dotfiles_cache/iTerm.app /Applications
 		success "iTerm: Application is now installed"
 	fi
 
