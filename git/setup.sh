@@ -22,7 +22,7 @@ function success () {
 	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"
 }
 function warn () {
-  printf "\r\033[2K  [\033[0;31mWARNING\033[0m] %s\n" "$1"
+  printf "\r\033[2K  [\033[0;31mWARN\033[0m] %s\n" "$1"
 }
 function fail () {
   printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"

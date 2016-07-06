@@ -9,18 +9,6 @@ set -e
 : "${dotfilesDirectory:="/home/$username/.dotfiles"}"
 : "${defaultShell:="bash"}"
 
-function rmSymlink ()
-{
-	symlinkToBeDeleted="/home/$username/$1"
-    if [ -f "$symlinkToBeDeleted" ];
-    then
-        rm /home/"$username"/"$1"
-        success "Deleted osx config file $1"
-    else
-        info "$1 has already been deleted"
-    fi
-}
-
 function install_dotfiles () {
   info 'Installing dotfiles'
 
@@ -35,9 +23,6 @@ function install_dotfiles () {
 
 # Symlinks all files
 	install_dotfiles
-
-# Removes OSX config files
-	rmSymlink .env
 
 # Sets the user's default shell to bash if it hasn't been done already
 if [[ $(env | grep SHELL | grep "$(which "$defaultShell")") == "" ]]; then
@@ -91,3 +76,21 @@ fi
 # Sets up dev environments
 	"$dotfilesDirectory"/unix/env-setup.sh
 	"$dotfilesDirectory"/common/dev-setup.sh
+
+# Setup nice diffing for git
+	export PATH="$HOME/.fancy:$PATH"
+	if [[ $(which diff-so-fancy) == "" ]]; then
+		info "Fancy Diff: Package was not found, downloading now"
+		if git clone https://github.com/so-fancy/diff-so-fancy.git "$HOME"/.fancy &> /dev/null ; then
+			success "Fancy Diff: Package is now installed"
+		else
+			fail "Fancy Diff: Package failed to install"
+		fi
+	else
+		success "Fancy Diff: Package is already installed, updating now"
+		if git -C "$HOME"/.fancy pull &> /dev/null ; then
+			success "Fancy Diff: Package is now updated"
+		else
+			warn "Fancy Diff: Package failed to update"
+		fi
+	fi

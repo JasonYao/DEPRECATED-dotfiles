@@ -8,6 +8,11 @@ set -e
 if [[ $(which pyenv) == "" ]]; then
 	info "Developing Environments: Pyenv is not installed, installing now"
 
+	# Checks for cache directory
+	if [[ ! -d $HOME/.dotfiles_cache ]]; then
+		mkdir "$HOME"/.dotfiles_cache
+	fi
+
 	# Checks for pyenv in the cache
 	if [[ -f $HOME/.dotfiles_cache/pyenv.zip ]]; then
 		success "Developing Environments: Pyenv is in the cache"
@@ -32,7 +37,7 @@ if [[ $(which pyenv) == "" ]]; then
 		fi
 	else
 		info "Developing Environments: Pyenv directory has not been extracted yet, extracting now"
-		if unzip "$HOME"/.dotfiles_cache/pyenv.zip -qd "$HOME"/.pyenv ; then
+		if unzip -q "$HOME"/.dotfiles_cache/pyenv.zip -d "$HOME" && mv "$HOME"/pyenv-master "$HOME"/.pyenv ; then
 			success "Developing Environments: Pyenv directory is now extracted"
 		else
 			fail "Developing Environments: Pyenv failed to be extracted"
@@ -71,7 +76,7 @@ if [[ $(which rbenv) == "" ]]; then
 		fi
 	else
 		info "Developing Environments: Rbenv directory has not been extracted yet, extracting now"
-		if unzip "$HOME"/.dotfiles_cache/rbenv.zip -qd "$HOME"/.rbenv ; then
+		if unzip -q "$HOME"/.dotfiles_cache/rbenv.zip -d "$HOME" && mv "$HOME"/rbenv-master "$HOME"/.rbenv ; then
 			success "Developing Environments: Rbenv directory is now extracted"
 		else
 			fail "Developing Environments: Rbenv failed to be extracted"
@@ -88,6 +93,23 @@ if [[ $(which rbenv) == "" ]]; then
 			success "Developing Environments: [Optional] Rbenv pre-compilation is now complete"
 		else
 			warn "Developing Environments: [Optional] Rbenv pre-compilation failed, but rbenv command should still work"
+		fi
+	fi
+
+	# Rbenv install setup
+	if [[ $(rbenv install &> "$HOME"/.dotfiles_cache/rbenv_install_test; grep "no such command" "$HOME/.dotfiles_cache/rbenv_install_test") == "" ]]; then
+		success "Developing Environments: Rbenv install plugin is already installed, updating now"
+		if git pull -C "$HOME"/.rbenv/plugins/ruby-build ; then
+			success "Developing Environments: Rbenv install plugin is now updated"
+		else
+			warn "Developing Environments: Rbenv failed to update"
+		fi
+	else
+		info "Developing Environments: Rbenv install plugin is not installed, downloading now"
+		if git clone https://github.com/rbenv/ruby-build.git "$HOME"/.rbenv/plugins/ruby-build &> /dev/null/ ; then
+			success "Developing Environments: Rbenv install plugin is now installed"
+		else
+			fail "Developing Environments: Rbenv install plugin failed to install"
 		fi
 	fi
 else

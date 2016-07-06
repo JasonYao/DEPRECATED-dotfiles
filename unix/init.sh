@@ -24,7 +24,7 @@ function success () {
 	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"
 }
 function warn () {
-	printf "\r\033[2K  [\033[0;31mWARNING\033[0m] %s\n" "$1"
+	printf "\r\033[2K  [\033[0;31mWARN\033[0m] %s\n" "$1"
 }
 function fail () {
 	printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
@@ -99,7 +99,7 @@ function autoRemove
 function setupUserBaseline
 {
 	# Adds a new user if it doesn't exist
-	if [[ $(grep "$username" "$(cut -d: -f1 < /etc/passwd)") == "" ]]; then
+	if [[ $(grep "$username" $(cut -d: -f1 < /etc/passwd)) == "" ]]; then
 		# Checks for input password for user, otherwise goes with default
 		if [[ $password == "f%@nKc5K9kfgMdWHdCLsgvDjTuJXsc3H" ]]; then
 			warn "Warning: Default password was used, please change user password to something else via \`sudo passwd $username\`"
@@ -247,8 +247,22 @@ if [ "$isServer" == "true" ]; then
 	updateAndUpgrade
 
 	# Checks for dependency packages
-	checkAndInstallPackage wget                 # Used in general downloading
-	checkAndInstallPackage git                  # Used in general project upkeep
+	checkAndInstallPackage wget			# Used in general downloading
+	checkAndInstallPackage git			# Used in general project upkeep
+	checkAndInstallPackage unzip			# Used with dealing with cached dotfile files
+	checkAndInstallPackages build-essential		# Used in pre-compiling rbenv
+
+	# Checks for pyenv dependencies
+	checkAndInstallPackages make
+	checkAndInstallPackages libssl-dev
+	checkAndInstallPackages zlib1g-dev
+	checkAndInstallPackages libbz2-dev
+	checkAndInstallPackages libreadline-dev
+	checkAndInstallPackages libsqlite3-dev
+	checkAndInstallPackages curl
+	checkAndInstallPackages llvm
+	checkAndInstallPackages libncurses5-dev
+	checkAndInstallPackages xz-utils
 	autoRemove
 
 	setupUserBaseline

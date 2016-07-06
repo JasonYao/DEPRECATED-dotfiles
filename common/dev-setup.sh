@@ -114,7 +114,7 @@ ruby_versions=(2.3.1)
 		if [[ $(which javac) == "" ]]; then
 			info "Java: Version 8 JDK was not installed, installing now"
 			# Installs Java for unix
-			sudo apt-get install -y default-jdk # Ain't shit just dandy
+			sudo apt-get install -y default-jdk &> /dev/null/ # Ain't shit just dandy
 			success "Java: Version 8 JDK is now installed"
 		else
 			success "Java: Version 8 JDK is already installed"
