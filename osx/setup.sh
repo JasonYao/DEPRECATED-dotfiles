@@ -9,6 +9,7 @@ set -e
 : "${username:="$(whoami)"}"
 : "${defaultShell:="bash"}"
 : "${dotfilesDirectory:="$HOME/.dotfiles"}"
+number_of_spaces=3
 
 function install_dotfiles () {
 	info 'Installing dotfiles'
@@ -61,4 +62,28 @@ install_dotfiles
 		success "Terminal: Defaults successfully set"
 	else
 		fail "Terminal: Defaults failed to be set"
+	fi
+
+# Sets up designated spaces
+	info "Spaces: Checking for $number_of_spaces spaces"
+	if [[ $(defaults read com.apple.spaces | grep name | wc -l) < $number_of_spaces ]]; then
+		info "Spaces: Currently only $(defaults read com.apple.spaces | grep name | wc -l) spaces are set up, adding now"
+		while [[ $(defaults read com.apple.spaces | grep name | wc -l) < $number_of_spaces ]]; do
+			if osascript $HOME/.dotfiles/osx/scripts/add_space &> /dev/null; then
+				success "Spaces: $(defaults read com.apple.spaces | grep name | wc -l) spaces now setup"
+			else
+				fail "Spaces: Failed to setup spaces, please check accessability to see if iTerm has control permissions"
+			fi
+		done
+	else
+		success "Spaces: $number_of_spaces spaces are already set up"
+	fi
+
+# Sets up background images TODO
+	info "Background Image: Checking background image"
+	# Note the enclosing single quotes around bash variables when trying to use them in applescripts
+	if osascript -e 'tell application "System Events" to set picture of every desktop to ("'$dotfilesDirectory'/img/background1.png" as POSIX file as alias)' ; then
+		success "Background: Desktop image is now correctly set"
+	else
+		fail "Background: Desktop image failed to be set"
 	fi
