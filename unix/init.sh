@@ -242,6 +242,46 @@ function setupFail2Ban
 	service fail2ban restart
 }
 
+function setupSharedMemory {
+	info "Shared Memory: Checking hardened status"
+	if [[ $(grep "/run/shm" /etc/fstab) == "" ]]; then
+		info "Shared Memory: Memory is currently unsecured, securing now"
+		# Note: This only is works in Ubuntu 12.10 or later - For earlier Ubuntu versions replace /run/shm with /dev/shm
+		echo "tmpfs     /run/shm     tmpfs     defaults,noexec,nosuid     0     0" | sudo tee --append /etc/fstab
+		success "Shared Memory: Memory is now secured"
+	else
+		success "Shared Memory: Memory is already secured"
+	fi
+}
+
+function setupSuPrivileges {
+	# Checks for admin group existence
+	info "Su Privileges: Checking security status now"
+	if [[ $(grep "admin" /etc/group) == "" ]]; then
+		info "Su Privileges: Admin group has not been created, creating now"
+		sudo groupadd admin
+		success "Su Privileges: Admin group is now created"
+	else
+		success "Su Privileges: Admin group is already created"
+	fi
+
+	# Checks for user inclusion in admin group
+	info "Su Privileges: Checking $username's admin status"
+	if [[ $(grep "admin" /etc/group | grep $username) == "" ]]; then
+		info "Su Privileges: $username is not a part of the admin group, adding $username now"
+		sudo usermod -a -G admin $username
+		success "Su Privileges: $username has now been added to the admin group"
+	else
+		success "Su Privileges: $username is already a part of the admin group"
+	fi
+
+	# Secures `su` usage to only admin and root
+	info "Su Privileges: Securing `su` usage to only root and admin"
+	sudo dpkg-statoverride --update --add root admin 4750 /bin/su
+	success "Su Privileges: `su` command is now secured"
+}
+
+# Start of actually calling the setup functions
 if [ "$isServer" == "true" ]; then
 	# Does server setup
 	updateAndUpgrade
@@ -270,6 +310,8 @@ if [ "$isServer" == "true" ]; then
 	setupAutoUpdate
 	setupUFW
 	setupFail2Ban
+	setupSharedMemory
+	setupSuPrivileges
 fi
 
 # Downloads and installs the dotfiles to the newly created user's directory
