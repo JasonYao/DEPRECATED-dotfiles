@@ -60,6 +60,11 @@ function checkAndSetAutoSettings ()
 	change_substring "$1" "$2" /etc/apt/apt.conf.d/50unattended-upgrades
 }
 
+function checkAndSetNetworkSettings ()
+{
+    change_substring "$1" "$2" /etc/sysctl.conf
+}
+
 function checkAndAppendSettings ()
 {
 	if [[ $(grep "$1" "/etc/apt/apt.conf.d/20auto-upgrades") == "" ]]; then
@@ -281,6 +286,81 @@ function setupSuPrivileges {
 	success "Su Privileges: `su` command is now secured"
 }
 
+# Helper function
+
+function setupNetworkHarden {
+	# IP Spoofing protection
+	info "Network: Setting IP spoofing protection"
+	checkAndSetNetworkSettings "#net.ipv4.conf.default.rp_filter=1" "net.ipv4.conf.default.rp_filter=1"
+	checkAndSetNetworkSettings "#net.ipv4.conf.all.rp_filter=1" "net.ipv4.conf.all.rp_filter=1"
+	success "Network: IP spoofing protection is enabled"
+
+	# Settings that have to be appended to the file, not changed
+	{
+		echo "# Ignore ICMP broadcast requests"
+		echo "net.ipv4.icmp_echo_ignore_broadcasts = 1"
+		echo ""
+
+		echo "# Disable source packet routing"
+		echo "net.ipv4.conf.default.accept_source_route = 0"
+		echo "net.ipv6.conf.default.accept_source_route = 0"
+		echo ""
+
+		echo "# Ignore send redirects"
+		echo "net.ipv4.conf.default.send_redirects = 0"
+		echo ""
+
+		echo "# Block SYN attacks"
+		echo "net.ipv4.tcp_max_syn_backlog = 2048"
+		echo "net.ipv4.tcp_synack_retries = 2"
+		echo "net.ipv4.tcp_syn_retries = 5"
+		echo ""
+
+		echo "# Log Martians"
+		echo "net.ipv4.icmp_ignore_bogus_error_responses = 1"
+		echo ""
+
+		echo "# Ignore ICMP redirects"
+		echo "net.ipv4.conf.default.accept_redirects = 0"
+		echo "net.ipv6.conf.default.accept_redirects = 0"
+		echo ""
+
+		echo "# Ignore Directed pings"
+		echo "net.ipv4.icmp_echo_ignore_all = 1"
+	} >> /etc/sysctl.conf
+
+	# Disable source packet routing
+	info "Network: Disabling source packet routing (we are not a router)"
+	checkAndSetNetworkSettings "#net.ipv4.conf.all.accept_source_route = 0" "net.ipv4.conf.all.accept_source_route = 0"
+	checkAndSetNetworkSettings "#net.ipv6.conf.all.accept_source_route = 0" "net.ipv6.conf.all.accept_source_route = 0"
+	success "Network: Source packet routing disabled (we are not a router)"
+
+	# Ignore send redirects
+	info "Network: Disabling sending of ICMP redirects (we are not a router)"
+	checkAndSetNetworkSettings "#net.ipv4.conf.all.send_redirects = 0" "net.ipv4.conf.all.send_redirects = 0"
+	success "Network: ICMP send redirects now ignored by default (we are not a router)"
+
+	# Block SYN attacks
+	info "Network: Blocking SYN attacks via SYN cookie enabling"
+	checkAndSetNetworkSettings "#net.ipv4.tcp_syncookies=1" "net.ipv4.tcp_syncookies=1"
+	success "Network: SYN cookie enabled"
+
+	# Log Martians
+	info "Network: Logging Martian packets"
+	checkAndSetNetworkSettings "#net.ipv4.conf.all.log_martians = 1" "net.ipv4.conf.all.log_martians = 1"
+	success "Network: All Martian packets are now logged"
+
+	# Ignore ICMP redirects
+	info "Network: Blocking MitM attacks via ICMP redirect disable"
+	checkAndSetNetworkSettings "#net.ipv4.conf.all.accept_redirects = 0" "net.ipv4.conf.all.accept_redirects = 0"
+	checkAndSetNetworkSettings "#net.ipv6.conf.all.accept_redirects = 0" "net.ipv6.conf.all.accept_redirects = 0"
+	success "Network: ICMP redirects are now disabled"
+
+	# Reloads sysctl with the latest changes
+	info "Network: Reloading all changes now"
+	sudo sysctl -p
+}
+
 # Start of actually calling the setup functions
 if [ "$isServer" == "true" ]; then
 	# Does server setup
@@ -312,6 +392,7 @@ if [ "$isServer" == "true" ]; then
 	setupFail2Ban
 	setupSharedMemory
 	setupSuPrivileges
+	setupNetworkHarden
 fi
 
 # Downloads and installs the dotfiles to the newly created user's directory
