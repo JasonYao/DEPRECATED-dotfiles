@@ -1,6 +1,9 @@
 # Family Servers
 alias yao='ssh -l jason -p 30000 159.203.101.28'
 
+# Weeks Server
+alias weeks='ssh -l jason -p 30000 128.199.166.153'
+
 # NYU Phi Kappa Sigma, Delta Phi Chapter Server
 alias skull='ssh -l jason -p 30000 skullhouse.nyc'
 
