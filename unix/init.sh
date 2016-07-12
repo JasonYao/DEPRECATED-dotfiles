@@ -252,7 +252,7 @@ function setupSharedMemory {
 	if [[ $(grep "/run/shm" /etc/fstab) == "" ]]; then
 		info "Shared Memory: Memory is currently unsecured, securing now"
 		# Note: This only is works in Ubuntu 12.10 or later - For earlier Ubuntu versions replace /run/shm with /dev/shm
-		echo "tmpfs     /run/shm     tmpfs     defaults,noexec,nosuid     0     0" | sudo tee --append /etc/fstab
+		echo "tmpfs     /run/shm     tmpfs     defaults,noexec,nosuid     0     0" | sudo tee --append /etc/fstab > /dev/null
 		success "Shared Memory: Memory is now secured"
 	else
 		success "Shared Memory: Memory is already secured"
@@ -291,45 +291,21 @@ function setupSuPrivileges {
 
 # Helper function
 function setupNetworkHarden {
+	# Backs up
+	if [[ ! -f /etc/sysctl.conf.backup ]]; then
+		info "Network: Backing up old sysctl.conf file"
+		if sudo cp /etc/sysctl.conf /etc/sysctl.conf.backup ; then
+			success "Network: sysctl.conf file is now backed up"
+		else
+			fail "Network: sysctl.conf file failed to be backed up"
+		fi
+	fi
+
 	# IP Spoofing protection
 	info "Network: Setting IP spoofing protection"
 	checkAndSetNetworkSettings "#net.ipv4.conf.default.rp_filter=1" "net.ipv4.conf.default.rp_filter=1"
 	checkAndSetNetworkSettings "#net.ipv4.conf.all.rp_filter=1" "net.ipv4.conf.all.rp_filter=1"
 	success "Network: IP spoofing protection is enabled"
-
-	# Settings that have to be appended to the file, not changed
-	{
-		echo "# Ignore ICMP broadcast requests"
-		echo "net.ipv4.icmp_echo_ignore_broadcasts = 1"
-		echo ""
-
-		echo "# Disable source packet routing"
-		echo "net.ipv4.conf.default.accept_source_route = 0"
-		echo "net.ipv6.conf.default.accept_source_route = 0"
-		echo ""
-
-		echo "# Ignore send redirects"
-		echo "net.ipv4.conf.default.send_redirects = 0"
-		echo ""
-
-		echo "# Block SYN attacks"
-		echo "net.ipv4.tcp_max_syn_backlog = 2048"
-		echo "net.ipv4.tcp_synack_retries = 2"
-		echo "net.ipv4.tcp_syn_retries = 5"
-		echo ""
-
-		echo "# Log Martians"
-		echo "net.ipv4.icmp_ignore_bogus_error_responses = 1"
-		echo ""
-
-		echo "# Ignore ICMP redirects"
-		echo "net.ipv4.conf.default.accept_redirects = 0"
-		echo "net.ipv6.conf.default.accept_redirects = 0"
-		echo ""
-
-		echo "# Ignore Directed pings"
-		echo "net.ipv4.icmp_echo_ignore_all = 1"
-	} >> /etc/sysctl.conf
 
 	# Disable source packet routing
 	info "Network: Disabling source packet routing (we are not a router)"
@@ -358,9 +334,69 @@ function setupNetworkHarden {
 	checkAndSetNetworkSettings "#net.ipv6.conf.all.accept_redirects = 0" "net.ipv6.conf.all.accept_redirects = 0"
 	success "Network: ICMP redirects are now disabled"
 
-	# Reloads sysctl with the latest changes
-	info "Network: Reloading all changes now"
-	sudo sysctl -p
+	# Settings that have to be appended to the file, not changed
+	if [[ $(grep "net.ipv4.icmp_echo_ignore_broadcasts" "/etc/sysctl.conf") == "" ]]; then
+		{
+			echo "# Ignore ICMP broadcast requests"
+			echo "net.ipv4.icmp_echo_ignore_broadcasts = 1"
+			echo ""
+		} >> /etc/sysctl.conf
+	fi
+
+	if [[ $(grep "net.ipv4.conf.default.accept_source_route" "/etc/sysctl.conf") == "" ]]; then
+		{
+			echo "# Disable source packet routing"
+			echo "net.ipv4.conf.default.accept_source_route = 0"
+			echo "net.ipv6.conf.default.accept_source_route = 0"
+			echo ""
+		} >> /etc/sysctl.conf
+	fi
+
+	if [[ $(grep "net.ipv4.conf.default.send_redirects" "/etc/sysctl.conf") == "" ]]; then
+		{
+			echo "# Ignore send redirects"
+			echo "net.ipv4.conf.default.send_redirects = 0"
+			echo ""
+		} >> /etc/sysctl.conf
+	fi
+
+	if [[ $(grep "net.ipv4.tcp_max_syn_backlog" "/etc/sysctl.conf") == "" ]]; then
+		{
+			echo "# Block SYN attacks"
+			echo "net.ipv4.tcp_max_syn_backlog = 2048"
+			echo "net.ipv4.tcp_synack_retries = 2"
+			echo "net.ipv4.tcp_syn_retries = 5"
+			echo ""
+		} >> /etc/sysctl.conf
+	fi
+
+	if [[ $(grep "net.ipv4.icmp_ignore_bogus_error_responses" "/etc/sysctl.conf") == "" ]]; then
+		{
+			echo "# Log Martians"
+			echo "net.ipv4.icmp_ignore_bogus_error_responses = 1"
+			echo ""
+		} >> /etc/sysctl.conf
+	fi
+
+	if [[ $(grep "net.ipv4.conf.default.accept_redirects" "/etc/sysctl.conf") == "" ]]; then
+		{
+			echo "# Ignore ICMP redirects"
+			echo "net.ipv4.conf.default.accept_redirects = 0"
+			echo "net.ipv6.conf.default.accept_redirects = 0"
+			echo ""
+		} >> /etc/sysctl.conf
+	fi
+
+	if [[ $(grep "net.ipv4.icmp_echo_ignore_all" "/etc/sysctl.conf") == "" ]]; then
+		{
+			echo "# Ignore Directed pings"
+			echo "net.ipv4.icmp_echo_ignore_all = 1"
+		} >> /etc/sysctl.conf
+	fi
+
+	# Reloads sysctl with the latest changes if applicable
+	info "Network: Reloading network configurations now"
+	sudo sysctl -p &> /dev/null
 }
 
 # Start of actually calling the setup functions

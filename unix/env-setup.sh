@@ -89,7 +89,7 @@ if [[ $(which rbenv) == "" ]]; then
 		success "Developing Environments: [Optional] Rbenv pre-compilation is already complete"
 	else
 		info "Developing Environments: [Optional] Rbenv pre-compilation is not complete, compiling now"
-		if /home/$username/.rbenv/src/configure && make -C /home/$username/.rbenv/src; then
+		if /home/$username/.rbenv/src/configure && make -C /home/$username/.rbenv/src > /dev/null ; then
 			success "Developing Environments: [Optional] Rbenv pre-compilation is now complete"
 		else
 			warn "Developing Environments: [Optional] Rbenv pre-compilation failed, but rbenv command should still work"
