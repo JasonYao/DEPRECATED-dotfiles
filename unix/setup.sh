@@ -78,17 +78,17 @@ fi
 	"$dotfilesDirectory"/common/dev-setup.sh
 
 # Setup nice diffing for git
-	export PATH="$HOME/.fancy:$PATH"
+	export PATH="/home/$username/.fancy:$PATH"
 	if [[ $(which diff-so-fancy) == "" ]]; then
 		info "Fancy Diff: Package was not found, downloading now"
-		if git clone https://github.com/so-fancy/diff-so-fancy.git "$HOME"/.fancy &> /dev/null ; then
+		if git clone https://github.com/so-fancy/diff-so-fancy.git /home/$username/.fancy &> /dev/null ; then
 			success "Fancy Diff: Package is now installed"
 		else
 			fail "Fancy Diff: Package failed to install"
 		fi
 	else
 		success "Fancy Diff: Package is already installed, updating now"
-		if git -C "$HOME"/.fancy pull &> /dev/null ; then
+		if git -C /home/$username/.fancy pull &> /dev/null ; then
 			success "Fancy Diff: Package is now updated"
 		else
 			warn "Fancy Diff: Package failed to update"

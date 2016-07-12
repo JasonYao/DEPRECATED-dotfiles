@@ -104,7 +104,7 @@ function autoRemove
 function setupUserBaseline
 {
 	# Adds a new user if it doesn't exist
-	if [[ $(grep "$username" $(cut -d: -f1 < /etc/passwd)) == "" ]]; then
+	if [[ $(cut -d: -f1 < /etc/passwd | grep "$username") == "" ]]; then
 		# Checks for input password for user, otherwise goes with default
 		if [[ $password == "f%@nKc5K9kfgMdWHdCLsgvDjTuJXsc3H" ]]; then
 			warn "Warning: Default password was used, please change user password to something else via \`sudo passwd $username\`"
@@ -280,14 +280,16 @@ function setupSuPrivileges {
 		success "Su Privileges: $username is already a part of the admin group"
 	fi
 
-	# Secures `su` usage to only admin and root
-	info "Su Privileges: Securing `su` usage to only root and admin"
-	sudo dpkg-statoverride --update --add root admin 4750 /bin/su
-	success "Su Privileges: `su` command is now secured"
+	# Secures su usage to only admin and root
+	info "Su Privileges: Securing su usage to only root and admin"
+	if sudo dpkg-statoverride --update --add root admin 4750 /bin/su ; then
+		success "Su Privileges: su command is now secured"
+	else
+		warn "Su Privileges: su command failed to be secure, though it may already be secured"
+	fi
 }
 
 # Helper function
-
 function setupNetworkHarden {
 	# IP Spoofing protection
 	info "Network: Setting IP spoofing protection"
@@ -367,22 +369,22 @@ if [ "$isServer" == "true" ]; then
 	updateAndUpgrade
 
 	# Checks for dependency packages
-	checkAndInstallPackage wget			# Used in general downloading
-	checkAndInstallPackage git			# Used in general project upkeep
+	checkAndInstallPackage wget				# Used in general downloading
+	checkAndInstallPackage git				# Used in general project upkeep
 	checkAndInstallPackage unzip			# Used with dealing with cached dotfile files
-	checkAndInstallPackages build-essential		# Used in pre-compiling rbenv
+	checkAndInstallPackage build-essential	# Used in pre-compiling rbenv
 
 	# Checks for pyenv dependencies
-	checkAndInstallPackages make
-	checkAndInstallPackages libssl-dev
-	checkAndInstallPackages zlib1g-dev
-	checkAndInstallPackages libbz2-dev
-	checkAndInstallPackages libreadline-dev
-	checkAndInstallPackages libsqlite3-dev
-	checkAndInstallPackages curl
-	checkAndInstallPackages llvm
-	checkAndInstallPackages libncurses5-dev
-	checkAndInstallPackages xz-utils
+	checkAndInstallPackage make
+	checkAndInstallPackage libssl-dev
+	checkAndInstallPackage zlib1g-dev
+	checkAndInstallPackage libbz2-dev
+	checkAndInstallPackage libreadline-dev
+	checkAndInstallPackage libsqlite3-dev
+	checkAndInstallPackage curl
+	checkAndInstallPackage llvm
+	checkAndInstallPackage libncurses5-dev
+	checkAndInstallPackage xz-utils
 	autoRemove
 
 	setupUserBaseline
@@ -427,11 +429,11 @@ else
 fi
 
 # Sets up SSH key access for the user
-	if [[ ! -d "$HOME/.ssh" ]]; then
-		mkdir "$HOME"/.ssh
-		chmod 700 "$HOME"/.ssh
-		echo "$sshPublicKey" >> "$HOME"/.ssh/authorized_keys
-		chmod 600 "$HOME"/.ssh/authorized_keys
-		chown -R "$username":"$username" "$HOME"/.ssh
+	if [[ ! -d "/home/$username/.ssh" ]]; then
+		mkdir /home/$username/.ssh
+		chmod 700 /home/$username/.ssh
+		echo "$sshPublicKey" >> /home/$username/.ssh/authorized_keys
+		chmod 600 /home/$username/.ssh/authorized_keys
+		chown -R "$username":"$username" /home/$username/.ssh
 		success "Installed SSH key access for $username"
 	fi

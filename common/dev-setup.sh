@@ -16,6 +16,11 @@ java_version[1.7]=7u80
 ruby_versions=(2.3.1)
 
 # Python check and set
+	if [[ $(which pyenv) == "" ]] && [[ $(uname -s) == "Linux" ]]; then
+		export PYENV_ROOT=/home/$username/.pyenv
+		export PATH="$PYENV_ROOT/bin:$PATH"
+	fi
+
 	for version in "${python_versions[@]}"; do
 		if [[ $(pyenv versions | grep "${version}") == "" ]]; then
 			info "Pyenv: Python version ${version} is not installed yet, installing now"
@@ -114,7 +119,7 @@ ruby_versions=(2.3.1)
 		if [[ $(which javac) == "" ]]; then
 			info "Java: Version 8 JDK was not installed, installing now"
 			# Installs Java for unix
-			sudo apt-get install -y default-jdk &> /dev/null/ # Ain't shit just dandy
+			sudo apt-get install -y default-jdk &> /dev/null # Ain't shit just dandy
 			success "Java: Version 8 JDK is now installed"
 		else
 			success "Java: Version 8 JDK is already installed"
@@ -122,6 +127,17 @@ ruby_versions=(2.3.1)
 	fi
 
 # Ruby check and set
+	# Checks to see rbenv is in the correct PATH
+	if [[ $(which rbenv) == "" ]] && [[ $(uname -s) == "Linux" ]]; then
+		export PATH="/home/$username/.rbenv/bin:$PATH"
+		export RBENV_ROOT=/home/$username/.rbenv
+	fi
+
+	# Checks to see if rbenv is initialised
+	if which rbenv > /dev/null; then
+		eval "$(rbenv init -)"
+	fi
+
 	for version in "${ruby_versions[@]}"; do
 		if [[ $(rbenv versions | grep "${version}") == "" ]]; then
 			info "Rbenv: Ruby version ${version} is not installed yet, installing now"
