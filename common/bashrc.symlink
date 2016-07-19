@@ -34,6 +34,7 @@
 		# Linux only
 		cat ~/.motd # Sets up MotD
 		eval `ssh-agent` > /dev/null && echo "SSH agent enabled" # Starts the ssh agent
+		PATH="$HOME/.fancy:$PATH"
 	else
 		# OSX only
 
