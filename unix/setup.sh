@@ -81,16 +81,36 @@ fi
 	export PATH="/home/$username/.fancy:$PATH"
 	if [[ $(which diff-so-fancy) == "" ]]; then
 		info "Fancy Diff: Package was not found, downloading now"
-		if git clone https://github.com/so-fancy/diff-so-fancy.git /home/$username/.fancy &> /dev/null ; then
+		if git clone https://github.com/so-fancy/diff-so-fancy.git /home/"$username"/.fancy &> /dev/null ; then
 			success "Fancy Diff: Package is now installed"
 		else
 			fail "Fancy Diff: Package failed to install"
 		fi
 	else
 		success "Fancy Diff: Package is already installed, updating now"
-		if git -C /home/$username/.fancy pull &> /dev/null ; then
+		if git -C /home/"$username"/.fancy pull &> /dev/null ; then
 			success "Fancy Diff: Package is now updated"
 		else
 			warn "Fancy Diff: Package failed to update"
 		fi
 	fi
+
+# Checks all directory ownerships for changes, and resets them if necessary
+	check=(.bin/ .dotfiles_cache/ .pyenv/ .rbenv/)
+	for directory in "${check[@]}"; do
+		if [[ $(ls -ld /home/"$username"/"${directory}" | awk '{print $3}') == "root" ]] || [[ $(ls -ld /home/"$username"/"${directory}" | awk '{print $4}') == "root" ]]; then
+			info "Ownership: Directory ${directory} is owned by another user, attempting to change file ownership"
+			if chown -R "$username":"$username" /home/"$username"/"${directory}" ; then
+				success "Ownership: Directory ${directory}'s ownership is set correctly"
+			else
+				info "Ownership: Directory ${directory} is owned by an administrator, or this user does not have permisssions, attempting sudo change"
+				if sudo chown -R "$username":"$username" /home/"$username"/"${directory}" ; then
+					success "Ownership: Directory ${directory}'s ownership is set correctly"
+				else
+					fail "Ownership: Directory ${directory}'s ownership could not be changed"
+				fi
+			fi
+		else
+			success "Ownership: Directory ${directory}'s ownership is already set correctly"
+		fi
+	done
