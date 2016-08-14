@@ -199,13 +199,15 @@ function setupUFW
 
 	# Checks that it's online and functioning
 	if [[ $(sudo ufw status | grep "inactive") != "" ]]; then
-		echo "y" | ufw enable > /dev/null
+		echo "y" | sudo ufw enable > /dev/null
 
 		if [[ $(sudo ufw status | grep "inactive") == "" ]]; then
 			success "UFW: Firewall is now active"
 		else
 			fail "UFW: Unable to activate firewall"
 		fi
+	else
+		success "UFW: Firewall is already enabled"
 	fi
 
 	# Checks for sane defaults
