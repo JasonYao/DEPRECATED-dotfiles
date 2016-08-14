@@ -146,7 +146,7 @@ function setupSSH
 	# Allows ssh access for the user
 	if [[ ! $(grep "AllowUsers $username" "/etc/ssh/sshd_config") ]]; then
 		if [[ $(grep "AllowUsers" "/etc/ssh/sshd_config") == "" ]]; then
-			sudo echo "AllowUsers $username" >> /etc/ssh/sshd_config
+			echo "AllowUsers $username" | sudo tee --append /etc/ssh/sshd_config > /dev/null
 		else
 			change_substring "AllowUsers" "AllowUsers $username" /etc/ssh/sshd_config
 		fi
