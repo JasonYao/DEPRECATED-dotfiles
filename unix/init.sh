@@ -156,7 +156,7 @@ function setupSSH
 	fi
 
 	# Restarts ssh daemon
-	service ssh restart
+	sudo service ssh restart
 }
 
 function setupAutoUpdate
@@ -189,8 +189,8 @@ function setupUFW
 	change_substring "ports=22" "ports=30000" /etc/ufw/applications.d/openssh-server
 
 	# Checks to make sure that the ssh port is setup
-	if [[ $(ufw show added | grep "ufw limit OpenSSH") == "" ]]; then
-		if ufw limit OpenSSH > /dev/null; then
+	if [[ $(sudo ufw show added | grep "ufw limit OpenSSH") == "" ]]; then
+		if sudo ufw limit OpenSSH > /dev/null; then
 			success "UFW: SSH port has been rate-limited"
 		else
 			fail "UFW: SSH port could not be rate-limited"
@@ -198,10 +198,10 @@ function setupUFW
 	fi
 
 	# Checks that it's online and functioning
-	if [[ $(ufw status | grep "inactive") != "" ]]; then
+	if [[ $(sudo ufw status | grep "inactive") != "" ]]; then
 		echo "y" | ufw enable > /dev/null
 
-		if [[ $(ufw status | grep "inactive") == "" ]]; then
+		if [[ $(sudo ufw status | grep "inactive") == "" ]]; then
 			success "UFW: Firewall is now active"
 		else
 			fail "UFW: Unable to activate firewall"
@@ -209,16 +209,16 @@ function setupUFW
 	fi
 
 	# Checks for sane defaults
-	if [[ $(ufw status verbose | grep "deny (incoming)") == "" ]]; then
-		if ufw default deny incoming > /dev/null ; then
+	if [[ $(sudo ufw status verbose | grep "deny (incoming)") == "" ]]; then
+		if sudo ufw default deny incoming > /dev/null ; then
 			success "UFW: Default has been set, all incoming traffic is being denied"
 		else
 			fail "UFW: Default could not be set, all incoming traffic is allowed"
 		fi
 	fi
 
-	if [[ $(ufw status verbose | grep "allow (outgoing)") == "" ]]; then
-		if ufw default allow outgoing > /dev/null ; then
+	if [[ $(sudo ufw status verbose | grep "allow (outgoing)") == "" ]]; then
+		if sudo ufw default allow outgoing > /dev/null ; then
 			success "UFW: Default has been set, all outgoing traffic is allowed"
 		else
 			fail "UFW: Default could not be set, all outgoing traffic is being denied"
@@ -244,7 +244,7 @@ function setupFail2Ban
 		success "Fail2Ban: Local jail created"
 	fi
 
-	service fail2ban restart
+	sudo service fail2ban restart
 }
 
 function setupSharedMemory {
