@@ -52,7 +52,7 @@ function change_substring ()
 	search=$1
 	replace=$2
 	file=$3
-	sed -i "s/${search}/${replace}/g" "${file}"
+	sudo sed -i "s/${search}/${replace}/g" "${file}"
 }
 
 function checkAndSetAutoSettings ()
@@ -119,7 +119,7 @@ function setupUserBaseline
 
 	# Adds the user to the sudo group if it hasn't been done already
 	if [[ $(grep root /etc/group | grep "$username") == "" ]]; then
-		gpasswd -a "$username" sudo > /dev/null
+		sudo gpasswd -a "$username" sudo > /dev/null
 		success "User $username has been added to the sudo group"
 	else
 		success "User $username has already been added to the sudo group"
@@ -132,7 +132,7 @@ function setupSSH
 	# Makes a backup
 	if [[ ! -d "/etc/ssh/sshd_config.backup" ]]; then
 		info "SSHD: Creating a backup of /etc/ssh/sshd_config"
-		cp /etc/ssh/sshd_config /etc/ssh/sshd_config.backup
+		sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.backup
 	fi
 
 	# Sets it to a non-standard port
@@ -146,7 +146,7 @@ function setupSSH
 	# Allows ssh access for the user
 	if [[ ! $(grep "AllowUsers $username" "/etc/ssh/sshd_config") ]]; then
 		if [[ $(grep "AllowUsers" "/etc/ssh/sshd_config") == "" ]]; then
-			echo "AllowUsers $username" >> /etc/ssh/sshd_config
+			sudo echo "AllowUsers $username" >> /etc/ssh/sshd_config
 		else
 			change_substring "AllowUsers" "AllowUsers $username" /etc/ssh/sshd_config
 		fi
