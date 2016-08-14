@@ -171,7 +171,7 @@ if [[ ! -d "$dotfilesDirectory" ]]; then
 else
 	# Dotfiles have been found, updates
 	info "Dotfiles already downloaded, updating now"
-	if  git -C "$dotfilesDirectory" pull --quiet &&  git -C "$dotfilesDirectory" submodule update --remote &> /dev/null; then
+	if git -C "$dotfilesDirectory" pull --quiet && git -C "$dotfilesDirectory" submodule update --remote &> /dev/null; then
 		success "Dotfiles: Successfully updated dotfiles"
 	else
 		fail "Dotfiles: Unable to update dotfiles"

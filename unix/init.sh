@@ -342,7 +342,7 @@ function setupNetworkHarden {
 			echo "# Ignore ICMP broadcast requests"
 			echo "net.ipv4.icmp_echo_ignore_broadcasts = 1"
 			echo ""
-		} >> /etc/sysctl.conf
+		} | sudo tee --append /etc/sysctl.conf
 	fi
 
 	if [[ $(grep "net.ipv4.conf.default.accept_source_route" "/etc/sysctl.conf") == "" ]]; then
@@ -351,7 +351,7 @@ function setupNetworkHarden {
 			echo "net.ipv4.conf.default.accept_source_route = 0"
 			echo "net.ipv6.conf.default.accept_source_route = 0"
 			echo ""
-		} >> /etc/sysctl.conf
+		} | sudo tee --append /etc/sysctl.conf
 	fi
 
 	if [[ $(grep "net.ipv4.conf.default.send_redirects" "/etc/sysctl.conf") == "" ]]; then
@@ -359,7 +359,7 @@ function setupNetworkHarden {
 			echo "# Ignore send redirects"
 			echo "net.ipv4.conf.default.send_redirects = 0"
 			echo ""
-		} >> /etc/sysctl.conf
+		} | sudo tee --append /etc/sysctl.conf
 	fi
 
 	if [[ $(grep "net.ipv4.tcp_max_syn_backlog" "/etc/sysctl.conf") == "" ]]; then
@@ -369,7 +369,7 @@ function setupNetworkHarden {
 			echo "net.ipv4.tcp_synack_retries = 2"
 			echo "net.ipv4.tcp_syn_retries = 5"
 			echo ""
-		} >> /etc/sysctl.conf
+		} | sudo tee --append /etc/sysctl.conf
 	fi
 
 	if [[ $(grep "net.ipv4.icmp_ignore_bogus_error_responses" "/etc/sysctl.conf") == "" ]]; then
@@ -377,7 +377,7 @@ function setupNetworkHarden {
 			echo "# Log Martians"
 			echo "net.ipv4.icmp_ignore_bogus_error_responses = 1"
 			echo ""
-		} >> /etc/sysctl.conf
+		} | sudo tee --append /etc/sysctl.conf
 	fi
 
 	if [[ $(grep "net.ipv4.conf.default.accept_redirects" "/etc/sysctl.conf") == "" ]]; then
@@ -386,14 +386,14 @@ function setupNetworkHarden {
 			echo "net.ipv4.conf.default.accept_redirects = 0"
 			echo "net.ipv6.conf.default.accept_redirects = 0"
 			echo ""
-		} >> /etc/sysctl.conf
+		} | sudo tee --append /etc/sysctl.conf
 	fi
 
 	if [[ $(grep "net.ipv4.icmp_echo_ignore_all" "/etc/sysctl.conf") == "" ]]; then
 		{
 			echo "# Ignore Directed pings"
 			echo "net.ipv4.icmp_echo_ignore_all = 1"
-		} >> /etc/sysctl.conf
+		} | sudo tee --append /etc/sysctl.conf
 	fi
 
 	# Reloads sysctl with the latest changes if applicable
