@@ -68,7 +68,7 @@ function checkAndSetNetworkSettings ()
 function checkAndAppendSettings ()
 {
 	if [[ $(grep "$1" "/etc/apt/apt.conf.d/20auto-upgrades") == "" ]]; then
-		echo "$1" >> /etc/apt/apt.conf.d/20auto-upgrades
+		echo "$1" | sudo tee --append /etc/apt/apt.conf.d/20auto-upgrades
 	fi
 }
 
