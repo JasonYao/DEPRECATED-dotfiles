@@ -4,11 +4,14 @@ alias yao='ssh -l jason -p 30000 159.203.101.28'
 # Weeks Server
 alias weeks='ssh -l jason -p 30000 128.199.166.153'
 
+# TakeUp.io Server
+alias takeup='ssh -l jason -p 30000 takeup.io'
+
 # NYU Phi Kappa Sigma, Delta Phi Chapter Server
 alias skull='ssh -l jason -p 30000 skullhouse.nyc'
 
 # Raspberry Pi Servers
-alias pi='ssh -l pi -p 30000 72.229.125.195'
+alias pi='ssh -l pi -p 30000 69.204.240.61'
 
 # CIMS access
 alias cims='ssh jy1299@access.cims.nyu.edu'
