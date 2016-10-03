@@ -96,7 +96,7 @@ set -e
 				if [[ $(grep "$(md5 "$HOME"/.dotfiles_cache/jdk-${java_version[${key}]}-macosx-x64.dmg | awk '{ print $4 }')" "$HOME"/.dotfiles_cache/jdk-checksum-${java_version[${key}]}) == "" ]]; then
 					fail "JDK: Cache file integrity verification failed"
 				else
-					success "JDK: Cache file integrity validation successfull"
+					success "JDK: Cache file integrity validation successful"
 				fi
 
 				# Mounts the JDK package
