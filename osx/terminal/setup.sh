@@ -5,7 +5,7 @@
 set -e
 
 iterm_info_plist="/Applications/iTerm.app/Contents/Info.plist"
-iterm_download_link="https://iterm2.com/downloads/stable/iTerm2-3_0_9.zip"
+iterm_download_link="https://iterm2.com/downloads/stable/iTerm2-3_0_10.zip"
 
 # Sets up fonts
 	if [[ $(echo $HOME/Library/Fonts/* | grep FreeMono) == "" ]]; then
