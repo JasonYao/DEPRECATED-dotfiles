@@ -9,7 +9,7 @@ firewall="/usr/libexec/ApplicationFirewall/socketfilterfw"
 # Usage: checkAndSetFirewall "--getblockall" "DISABLED" "--setblockall on" "default to deny incoming traffic" "Default to deny incoming traffic"
 function checkAndSetFirewall () {
 	if [[ $($firewall "$1" | grep "$2") != "" ]]; then
-		if sudo $firewall "$3" > /dev/null ; then
+		if sudo $firewall $3 > /dev/null ; then
 			success "Firewall: Successfully set $4"
 		else
 			fail "Firewall: Failed to set $4"
@@ -100,7 +100,7 @@ function check_and_remove_bad_dock_apps() {
 }
 
 function check_and_manage_dock_folders() {
-	if [[ $(defaults read com.apple.Dock persistent-others | grep "$1;") == "" ]]; then
+	if [[ $(defaults read com.apple.Dock persistent-others | grep "$1") == "" ]]; then
 		info "Dock: $1 folder is not set on the dock, setting now"
 		defaults write com.apple.dock persistent-others -array-add \
 			"<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>$1</string><key>_CFURLStringType</key><integer>0</integer></dict></dict><key>tile-type</key><string>directory-tile</string></dict>"
