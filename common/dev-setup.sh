@@ -65,7 +65,7 @@ ruby_versions=(2.3.1)
 				if [[ ! -f $HOME/.dotfiles_cache/jdk-${java_version[${key}]}-macosx-x64.dmg ]]; then
 					info "JDK: Unable to find version ${key} in cache, downloading now"
 					wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
-						download.oracle.com/otn-pub/java/jdk/${java_version[${key}]}-b14/jdk-${java_version[${key}]}-macosx-x64.dmg -O \
+						download.oracle.com/otn-pub/java/jdk/${java_version[${key}]}-b15/jdk-${java_version[${key}]}-macosx-x64.dmg -O \
 						"$HOME"/.dotfiles_cache/jdk-${java_version[${key}]}-macosx-x64.dmg -q --show-progress
 				else
 					success "JDK: Version ${key} is in cache"

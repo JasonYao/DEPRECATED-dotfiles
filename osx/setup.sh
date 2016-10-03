@@ -46,11 +46,21 @@ install_dotfiles
 	fi
 
 # Installs/upgrades homebrew
-	"$dotfilesDirectory"/osx/homebrew/install.sh
+	# Checks to make sure that the latest GNU bash is used, 
+	# since associative arrays are only in bash 4+
+	if [[ $(which brew) == "" ]]; then
+		echo "\r" | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	fi
+
+	if [[ $(which bash) == "/bin/bash" ]]; then
+		brew install bash
+	fi
+
+	/usr/local/bin/bash "$dotfilesDirectory"/osx/homebrew/install.sh
 
 # Sets up development environment
 	info "Development environment: Checking environment status"
-	if "$dotfilesDirectory"/common/dev-setup.sh; then
+	if /usr/local/bin/bash "$dotfilesDirectory"/common/dev-setup.sh; then
 		success "Development environment: All environments are installed and ready"
 	else
 		fail "Development environment: Failed to install all environments correctly"

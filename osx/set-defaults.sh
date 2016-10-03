@@ -25,10 +25,15 @@ function checkAndSetFirewall () {
 # $4 = target_type_and_value
 # $5 = message_success
 function check_and_set_default() {
-	if [[ $(defaults read $1) == "$2" ]]; then
-		success "$3"
+	if defaults read "$1" ; then
+		if [[ $(defaults read "$1") == "$2" ]]; then
+			success "$3"
+		else
+			defaults write $1 $4
+			success "$5"
+		fi
 	else
-		defaults write "$1" "$4"
+		defaults write $1 $4
 		success "$5"
 	fi
 }
@@ -109,7 +114,8 @@ function check_and_manage_dock_folders() {
 	check_and_set_default "-g ApplePressAndHoldEnabled" 0 "Keyboard: Press & hold has already been disabled" "-bool false" "Keyboard: Press & hold has been disabled"
 
 # Sets a really fast key repeat
-	check_and_set_default "NSGlobalDomain KeyRepeat" 0 "Keyboard: 0-delay key repeat has already been enabled" "-int 0" "Keyboard: 0-delay key repeat has been enabled"
+	check_and_set_default "NSGlobalDomain KeyRepeat" 1 "Keyboard: 0-delay key repeat has already been enabled" "-int 1" "Keyboard: 0-delay key repeat has been enabled"
+	check_and_set_default "NSGlobalDomain InitialKeyRepeat" 10 "Keyboard: 0-delay initial key repeat has already been enabled" "-int 10" "Keyboard: 0-delay initial key repeat is now enabled"
 
 # Sets the Finder prefs for showing a few different volumes on the Desktop
 	check_and_set_default "com.apple.finder ShowHardDrivesOnDesktop" 1 "Finder: Show hard drives on desktop is already enabled" "-bool true" \
@@ -189,13 +195,15 @@ function check_and_manage_dock_folders() {
 		"Trackpad: Show app expose gesture is already enabled"
 
 # Disables bluetooth if enabled
-	if [[ $(defaults read /Library/Preferences/com.apple.Bluetooth.plist | grep "BRPairedDevices") == "" ]]; then
-		check_and_set_default "/Library/Preferences/com.apple.Bluetooth.plist ControllerPowerState" 0 "Bluetooth: BT is already disabled" "-bool false" \
+	if [[ -f /Library/Preferences/com.apple.Bluetooth.plist ]]; then
+		check_and_set_default "com.apple.Bluetooth.plist ControllerPowerState" 0 "Bluetooth: BT is already disabled" "-bool false" \
 			"Bluetooth: BT is now disabled"
+	else
+		info "Bluetooth: BT was not found for this device"
 	fi
 
 # Disables guest accounts if enabled
-	check_and_set_default "/Library/Preferences/com.apple.loginwindow.plist GuestEnabled" 0 "User: Guest account is already disabled" "-bool false" \
+	check_and_set_default "com.apple.loginwindow.plist GuestEnabled" 0 "User: Guest account is already disabled" "-bool false" \
 		"User: Guest account is now disabled"
 
 # Sets input languages
