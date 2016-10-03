@@ -5,15 +5,20 @@
 set -e
 
 # Python env stuff
-python_versions=(3.5.2 2.7.12)
+	python_versions=(3.5.2 2.7.12)
 
 # Java env stuff
-declare -A java_version
-java_version[1.8]=8u92
-java_version[1.7]=7u80
+	declare -A java_version
+	java_version[1.8]=8u102
+	java_version[1.7]=7u80
+
+	# We do this because oracle is a bitch and their java 7 download with b14 is corrupted
+	declare -A java_bin
+	java_bin[1.8]=b14
+	java_bin[1.7]=b15
 
 # Ruby env stuff
-ruby_versions=(2.3.1)
+	ruby_versions=(2.3.1)
 
 # Python check and set
 	if [[ $(which pyenv) == "" ]] && [[ $(uname -s) == "Linux" ]]; then
@@ -65,8 +70,8 @@ ruby_versions=(2.3.1)
 				if [[ ! -f $HOME/.dotfiles_cache/jdk-${java_version[${key}]}-macosx-x64.dmg ]]; then
 					info "JDK: Unable to find version ${key} in cache, downloading now"
 					wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" \
-						download.oracle.com/otn-pub/java/jdk/${java_version[${key}]}-b15/jdk-${java_version[${key}]}-macosx-x64.dmg -O \
-						"$HOME"/.dotfiles_cache/jdk-${java_version[${key}]}-macosx-x64.dmg -q --show-progress
+					download.oracle.com/otn-pub/java/jdk/${java_version[${key}]}-${java_bin[${key}]}/jdk-${java_version[${key}]}-macosx-x64.dmg -O \
+					"$HOME"/.dotfiles_cache/jdk-${java_version[${key}]}-macosx-x64.dmg -q --show-progress
 				else
 					success "JDK: Version ${key} is in cache"
 				fi
@@ -94,10 +99,18 @@ ruby_versions=(2.3.1)
 					success "JDK: Cache file integrity validation successfull"
 				fi
 
+				# Mounts the JDK package
 				info "JDK: Mounting version ${key}"
 				hdiutil mount "$HOME"/.dotfiles_cache/jdk-${java_version[${key}]}-macosx-x64.dmg &> /dev/null
-				jdk_volume_name="/Volumes/$(echo /Volumes/* | grep JDK)"
-				jdk_pkg_file="$jdk_volume_name/"$(echo "$jdk_volume_name"/* | grep JDK)
+
+				# Isolates the JDK volume
+				info "JDK: Version ${key} is now mounted, isolating JDK package"
+				jdk_volume_name="/Volumes/$(ls /Volumes/ | grep "JDK")"
+				jdk_pkg_file="$jdk_volume_name/"$(ls "$jdk_volume_name"/ | grep JDK)
+				info "JDK: JDK package is isolated to $jdk_pkg_file"
+
+				# Runs the JDK installer
+				info "JDK: Version ${key} is now mounted, running JDK installer now from $jdk_pkg_file"
 				sudo installer -pkg "$jdk_pkg_file" -target / &> /dev/null
 				hdiutil unmount "$jdk_volume_name" &> /dev/null
 				success "JDK: Version ${key} is now installed"
