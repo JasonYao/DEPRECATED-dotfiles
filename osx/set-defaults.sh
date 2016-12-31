@@ -25,13 +25,8 @@ function checkAndSetFirewall () {
 # $4 = target_type_and_value
 # $5 = message_success
 function check_and_set_default() {
-	if defaults read "$1" ; then
-		if [[ $(defaults read "$1") == "$2" ]]; then
-			success "$3"
-		else
-			defaults write $1 $4
-			success "$5"
-		fi
+	if [[ $(defaults read "$1" 2> /dev/null) == "$2" ]]; then
+		success "$3"
 	else
 		defaults write $1 $4
 		success "$5"
@@ -47,8 +42,9 @@ function check_and_set_default() {
 function check_and_set_dock() {
 	if [[ $(defaults read com.apple.Dock | grep "$1 = $2") == "" ]]; then
 		info "$3"
-		defaults write com.apple.Dock "$1" "$4"
+		defaults write com.apple.Dock $1 $4
 		killall Dock
+		sleep 2
 		success "$5"
 	else
 		success "$6"
@@ -90,9 +86,9 @@ function check_and_remove_bad_dock_apps() {
 		info "Dock: Contains non-default applications, killing off now"
 		defaults delete com.apple.Dock persistent-apps
 		killall Dock
-		success "Dock: All non-default applications sanitised"
+		success "Dock: All non-default applications are now sanitised"
 	else
-		success "Dock: All non-default applications already sanitised"
+		success "Dock: All non-default applications are already sanitised"
 	fi
 	info "Dock: Checking for all default app existences"
 	repopulate_all_dock_apps
@@ -111,7 +107,7 @@ function check_and_manage_dock_folders() {
 }
 
 # Disable press-and-hold for keys in favor of key repeat
-	check_and_set_default "-g ApplePressAndHoldEnabled" 0 "Keyboard: Press & hold has already been disabled" "-bool false" "Keyboard: Press & hold has been disabled"
+	check_and_set_default "-g ApplePressAndHoldEnabled" "0" "Keyboard: Press & hold has already been disabled" "-bool false" "Keyboard: Press & hold has been disabled"
 
 # Sets a really fast key repeat
 	check_and_set_default "NSGlobalDomain KeyRepeat" 1 "Keyboard: 0-delay key repeat has already been enabled" "-int 1" "Keyboard: 0-delay key repeat has been enabled"
@@ -159,13 +155,15 @@ function check_and_manage_dock_folders() {
 	fi
 
 # Sets up normal dock experience
-	check_and_set_dock "autohide" "1" "Dock: Autohiding is not enabled, enabling now" "-bool true" "Dock: Autohiding is now enabled" "Dock: Autohiding is already enabled"
+	check_and_set_dock "autohide" "1" "Dock: Autohiding is not enabled, enabling now" "-bool true" "Dock: Autohiding is now enabled" \
+	"Dock: Autohiding is already enabled"
+	
 	check_and_set_dock "magnification" "1" "Dock: Magnification is not enabled, enabling now" "-bool true" "Dock: Magnification is now enabled" \
 		"Dock: Magnification is already enabled"
 
 	# Sets the size of icons (largesize == under magnification)
-	check_and_set_dock "tilesize" "52" "Dock: Tilesize is not correctly set" "52" "Dock: Tilesize is now correctly set" "Dock: Tilesize is already correctly set"
-	check_and_set_dock "largesize" "76" "Dock: Magnification tilesize is not correctly set" "-float 76" "Dock: Magnification tilesize is now correctly set" \
+	check_and_set_dock "tilesize" "64" "Dock: Tilesize is not correctly set" "-int 64" "Dock: Tilesize is now correctly set" "Dock: Tilesize is already correctly set"
+	check_and_set_dock "largesize" "80" "Dock: Magnification tilesize is not correctly set" "-int 80" "Dock: Magnification tilesize is now correctly set" \
 		"Dock: Magnification tilesize is already correctly set"
 
 	# Enables recent applications stack in dock

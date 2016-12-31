@@ -52,3 +52,11 @@ highlight SpellLocal term=underline cterm=underline
 
 " Checks where the dictionary should be found at
 let g:spellfile_URL = 'http://ftp.vim.org/vim/runtime/spell'
+
+" Trailing whitespace highlighting
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()

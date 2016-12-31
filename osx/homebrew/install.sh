@@ -59,3 +59,11 @@ function check_homebrew_package() {
 	done
 
 	success "Homebrew: All packages installed"
+
+# Runs the cask script
+	info "Homebrew: Checking cask app status"
+	if "$dotfilesDirectory"/osx/homebrew/cask.sh; then
+		success "Homebrew: Cask apps are successfully installed"
+	else
+		fail "Homebrew: Cask apps failed to be successfully installed"
+	fi
