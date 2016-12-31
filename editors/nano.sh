@@ -15,11 +15,11 @@ fi
 if [[ -f $HOME/.nanorc ]]; then
 	success "Nano: Editor settings have already been set"
 else
-	info "Nano: Editor settings have not ben applied yet, applying now"
+	info "Nano: Editor settings have not been applied yet, applying now"
 	echo "# Nano editor configuration files" > "$HOME"/.nanorc
 
 	{
-  	echo "set const"
+		echo "set const"
 		echo "set tabsize 4"
 		echo ""
 		echo "# Included syntax highlighting:"

@@ -1,0 +1,54 @@
+" Jason's personal Vim configs
+
+""
+" General
+""
+
+" Show line numbers
+set number
+
+" Prevent vim from emulating vi
+set nocompatible
+
+" Allows the editor to show syntax
+syntax enable
+
+" Sets the colour scheme
+colorscheme delek
+
+" Set automatic indentation
+set autoindent
+set smartindent
+
+" Sets tab & indenting with '>' to be 4 spaces width
+set tabstop=4
+set shiftwidth=4
+
+" Show matching [] and {}
+set showmatch
+
+""
+" Spell Checking
+""
+
+" Spell check on
+set spell spelllang=en_us
+setlocal spell spelllang=en_us
+
+
+" Toggle spelling with the F7 key
+nn <F7> :setlocal spell! spelllang=en_us<CR>
+imap <F7> <C-o>:setlocal spell! spelllang=en_us<CR>
+
+" Sets what misspellings to show
+highlight clear SpellBad
+highlight SpellBad term=standout ctermfg=1 term=underline cterm=underline
+highlight clear SpellCap
+highlight SpellCap term=underline cterm=underline
+highlight clear SpellRare
+highlight SpellRare term=underline cterm=underline
+highlight clear SpellLocal
+highlight SpellLocal term=underline cterm=underline
+
+" Checks where the dictionary should be found at
+let g:spellfile_URL = 'http://ftp.vim.org/vim/runtime/spell'

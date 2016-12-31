@@ -4,6 +4,19 @@
 
 set -e
 
+##
+# Default values
+##
+: "${username:="$(whoami)"}"
+: "${password:=""}"
+: "${defaultShell:="bash"}"
+: "${dotfilesDirectory:="$HOME/.dotfiles"}"
+: "${sshPublicKey:="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhNCsxxzqX4c0mKcEmuiDdjnaHg2eQtmaTR3RWolf8F Jason@Jasons-MacBook-Pro.local"}"
+: "${git_editor:="vim"}"
+: "${git_username:="Jason Yao"}"
+: "${git_email:="jasony.edu@gmail.com"}"
+
+
 ###
 # Helper functions
 ##
@@ -17,25 +30,25 @@ function success () {
 	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"
 }
 function warn () {
-  printf "\r\033[2K  [\033[0;31mWARN\033[0m] %s\n" "$1"
+	printf "\r\033[2K  [\033[0;31mWARN\033[0m] %s\n" "$1"
 }
 function fail () {
-  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
-  echo ''
-  exit 1
+	printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
+	echo ''
+	exit 1
 }
 function checkAndInstallPackage () {
-    info "Checking for $1"
-    if dpkg -s "$1" > /dev/null 2>&1 ; then
-        success "$1 is already installed"
-    else
-        info "$1 not found, installing now"
-        if sudo apt-get install "$1" -y &> /dev/null ; then
-            success "$1 successfully installed"
-        else
-            fail "$1 failed to install"
-        fi
-    fi
+	info "Checking for $1"
+	if dpkg -s "$1" > /dev/null 2>&1 ; then
+		success "$1 is already installed"
+	else
+		info "$1 not found, installing now"
+		if sudo apt-get install "$1" -y &> /dev/null ; then
+			success "$1 successfully installed"
+		else
+			fail "$1 failed to install"
+		fi
+	fi
 }
 
 function link_file () {
@@ -116,16 +129,6 @@ function link_file () {
   fi
 }
 
-: "${username:="$(whoami)"}"
-: "${password:=""}"
-: "${isServer:=false}"
-: "${defaultShell:="bash"}"
-: "${dotfilesDirectory:="$HOME/.dotfiles"}"
-: "${sshPublicKey:="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhNCsxxzqX4c0mKcEmuiDdjnaHg2eQtmaTR3RWolf8F Jason@Jasons-MacBook-Pro.local"}"
-: "${git_editor:="nano"}"
-: "${git_username:="Jason Yao"}"
-: "${git_email:="jasony.edu@gmail.com"}"
-
 home="$dotfilesDirectory/.."
 if [[ "$dotfilesDirectory" == "/root/.dotfiles" ]]; then
 	dotfilesDirectory="/home/$username/.dotfiles"
@@ -142,46 +145,44 @@ export -f link_file
 export -f checkAndInstallPackage
 
 export username
-export isServer
 export defaultShell
 export dotfilesDirectory
 export home
 
-if [[ ! -d "$dotfilesDirectory" ]]; then
-	# No dotfiles found, download now
-	if [ "$(uname -s)" == "Darwin" ]; then
-		# OSX: Downloads dotfiles
-		if git clone --recursive https://github.com/JasonYao/dotfiles.git "$dotfilesDirectory" &> /dev/null; then
-			success "Downloaded dotfiles successfully"
-		else
-			fail "Failed to download dotfiles, either internet connection or SSH keys aren't activated"
-		fi
-		info "OS detected was: OSX, running OSX setup script now"
-		bash "$dotfilesDirectory"/osx/setup.sh 2>&1
-	else
-		# Unix: Downloads dotfiles
-		info "Downloading init script"
-		wget https://raw.githubusercontent.com/JasonYao/dotfiles/master/unix/init.sh > /dev/null 2>&1 && \
-		username=$username password=$password isServer=$isServer defaultShell=$defaultShell dotfilesDirectory=$dotfilesDirectory sshPublicKey=$sshPublicKey \
-		bash init.sh; rm -rf init.sh
-		chown -R "$username":"$username" "$dotfilesDirectory"
-		info "OS detected was: Unix, running unix setup script now"
-		"$dotfilesDirectory"/unix/setup.sh 2>&1
-	fi
-else
-	# Dotfiles have been found, updates
-	info "Dotfiles already downloaded, updating now"
+if [[ -d "$dotfilesDirectory" ]]; then
+	# Dotfiles have been found, just updates everything
+	info "Dotfiles: Dotfiles already downloaded, updating now"
 	if git -C "$dotfilesDirectory" pull --quiet && git -C "$dotfilesDirectory" submodule update --remote &> /dev/null; then
 		success "Dotfiles: Successfully updated dotfiles"
 	else
 		fail "Dotfiles: Unable to update dotfiles"
 	fi
-
-	if [ "$(uname -s)" == "Darwin" ]; then
-		"$dotfilesDirectory"/osx/setup.sh 2>&1
+else
+	# Dotfiles haven't been found, downloads now
+	if git clone --recursive https://github.com/JasonYao/dotfiles.git "$dotfilesDirectory" &> /dev/null; then
+		success "Dotfiles: Downloaded Dotfiles successfully"
 	else
-		"$dotfilesDirectory"/unix/setup.sh 2>&1
+		fail "Dotfiles: Failed to download Dotfiles, try checking your internet connection, or SSH key activation status"
 	fi
+
+	# Runs a first-time script if it's Linux
+	if [ "$(uname -s)" != "Darwin" ]; then
+		# Linux: Runs Linux-specific setup scripts
+		info "OS: Performing first-time environment checks for Linux"
+		wget https://raw.githubusercontent.com/JasonYao/dotfiles/master/unix/init.sh > /dev/null 2>&1 && \
+		username=$username password=$password defaultShell=$defaultShell dotfilesDirectory=$dotfilesDirectory sshPublicKey=$sshPublicKey \
+		bash init.sh; rm -rf init.sh
+		chown -R "$username":"$username" "$dotfilesDirectory"
+	fi
+fi
+
+# Runs OS-specific scripts
+if [ "$(uname -s)" == "Darwin" ]; then
+	info "OS: MacOS was detected, running MacOS setup script now"
+	bash "$dotfilesDirectory"/osx/setup.sh 2>&1
+else
+	info "OS: Linux was detected, running Linux setup script now"
+	bash "$dotfilesDirectory"/unix/setup.sh 2>&1
 fi
 
 # Sets up git environment

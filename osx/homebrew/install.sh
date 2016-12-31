@@ -7,7 +7,7 @@ set -e
 homebrew_packages=(
 	coreutils wget autoconf automake make nano openssl pyenv pyenv-virtualenv
 	jenv mmv cmake rbenv bash readline diff-so-fancy unrar nmap kubernetes-cli pv
-	grep gnu-tar gnu-sed gawk gzip shellcheck
+	grep gnu-tar gnu-sed gawk gzip shellcheck vim node sbt
 )
 
 # Any packages that requires flags upon install should be both above and here

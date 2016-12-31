@@ -4,7 +4,7 @@
 
 set -e
 
-: "${git_editor:="nano"}"
+: "${git_editor:="vim"}"
 : "${git_username:="Jason Yao"}"
 : "${git_email:="jasony.edu@gmail.com"}"
 : "${git_diff_output:="diff-so-fancy | less --tabs=4 -RFX"}"
