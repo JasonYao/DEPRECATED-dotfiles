@@ -129,7 +129,7 @@ function check_and_manage_dock_folders() {
 	check_and_set_default "com.apple.menuextra.battery ShowPercent" 1 "Battery: Show percent battery remaining is already enabled" "-bool true" "Battery: Show percent battery is now enabled"
 
 # Sets the trackpad speed to max (to set to another value, set between 0 ~ 3, to disable set to -1)
-	check_and_set_default "-g com.apple.trackpad.scaling" 3.0 "Trackpad: Tracking speed is already max" "3.0" "Trackpad: Tracking speed is now set to max"
+	check_and_set_default "-g com.apple.trackpad.scaling" 3.0 "Trackpad: Tracking speed is already max" "-float 3.0" "Trackpad: Tracking speed is now set to max"
 
 # Disables "natural" scrolling
     check_and_set_default "-g com.apple.swipescrolldirection" 0 "Trackpad: Natural scrolling is already disabled" "-bool FALSE" "Trackpad: Natural scrolling is now disabled"
@@ -157,7 +157,7 @@ function check_and_manage_dock_folders() {
 # Sets up normal dock experience
 	check_and_set_dock "autohide" "1" "Dock: Autohiding is not enabled, enabling now" "-bool true" "Dock: Autohiding is now enabled" \
 	"Dock: Autohiding is already enabled"
-	
+
 	check_and_set_dock "magnification" "1" "Dock: Magnification is not enabled, enabling now" "-bool true" "Dock: Magnification is now enabled" \
 		"Dock: Magnification is already enabled"
 
