@@ -10,7 +10,7 @@ set -e
 : "${username:="$(whoami)"}"
 : "${password:=""}"
 : "${defaultShell:="bash"}"
-: "${dotfilesDirectory:="$HOME/.dotfiles"}"
+dotfilesDirectory="$HOME/.dotfiles"
 : "${sshPublicKey:="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhNCsxxzqX4c0mKcEmuiDdjnaHg2eQtmaTR3RWolf8F Jason@Jasons-MacBook-Pro.local"}"
 : "${git_editor:="vim"}"
 : "${git_username:="Jason Yao"}"
@@ -139,8 +139,8 @@ fi
 export -f info
 export -f user
 export -f success
-export -f fail
 export -f warn
+export -f fail
 export -f link_file
 export -f checkAndInstallPackage
 
@@ -149,40 +149,13 @@ export defaultShell
 export dotfilesDirectory
 export home
 
-if [[ -d "$dotfilesDirectory" ]]; then
-	# Dotfiles have been found, just updates everything
-	info "Dotfiles: Dotfiles already downloaded, updating now"
-	if git -C "$dotfilesDirectory" pull --quiet && git -C "$dotfilesDirectory" submodule update --remote &> /dev/null; then
-		success "Dotfiles: Successfully updated dotfiles"
-	else
-		fail "Dotfiles: Unable to update dotfiles"
-	fi
-else
-	# Dotfiles haven't been found, downloads now
-	if git clone --recursive https://github.com/JasonYao/dotfiles.git "$dotfilesDirectory" &> /dev/null; then
-		success "Dotfiles: Downloaded Dotfiles successfully"
-	else
-		fail "Dotfiles: Failed to download Dotfiles, try checking your internet connection, or SSH key activation status"
-	fi
-
-	# Runs a first-time script if it's Linux
-	if [ "$(uname -s)" != "Darwin" ]; then
-		# Linux: Runs Linux-specific setup scripts
-		info "OS: Performing first-time environment checks for Linux"
-		wget https://raw.githubusercontent.com/JasonYao/dotfiles/master/unix/init.sh > /dev/null 2>&1 && \
-		username=$username password=$password defaultShell=$defaultShell dotfilesDirectory=$dotfilesDirectory sshPublicKey=$sshPublicKey \
-		bash init.sh; rm -rf init.sh
-		chown -R "$username":"$username" "$dotfilesDirectory"
-	fi
-fi
-
 # Runs OS-specific scripts
 if [ "$(uname -s)" == "Darwin" ]; then
 	info "OS: MacOS was detected, running MacOS setup script now"
-	bash "$dotfilesDirectory"/osx/setup.sh 2>&1
+	"$dotfilesDirectory"/osx/setup.sh 2>&1
 else
 	info "OS: Linux was detected, running Linux setup script now"
-	bash "$dotfilesDirectory"/unix/setup.sh 2>&1
+	"$dotfilesDirectory"/unix/setup.sh 2>&1
 fi
 
 # Sets up git environment

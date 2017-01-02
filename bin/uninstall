@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+##
+# Uninstalls any vestigial
+# dotfiles-related files/directories
+##
+set -e
+
+##
+# Constants
+##
+dotfiles_directory="$HOME/.dotfiles"
+
+##
+# Helper functions
+##
+function info () {
+	printf "\r  [ \033[00;34m..\033[0m ] %s\n" "$1"
+}
+function user () {
+	printf "\r  [ \033[0;33m??\033[0m ] %s " "$1"
+}
+function success () {
+	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"
+}
+function warn () {
+	printf "\r\033[2K  [\033[0;31mWARN\033[0m] %s\n" "$1"
+}
+function fail () {
+	printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
+	echo ''
+	exit 1
+}
+
+# Because we created a cache directory, we'll need to remove it.
+if [[ -d "$cache_directory" ]]; then
+	if rm -rf "$cache_directory" ; then
+		success "Uninstall: Cache directory is now removed"
+	else
+		fail "Uninstall: Cache directory failed to be removed, try checking directory permissions"
+	fi
+fi
+
+success "Uninstall: All vestigial files and directories have been removed"

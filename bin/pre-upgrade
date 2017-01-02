@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# Startup script to bootstrap calling the correct dotfile setup script
+
+##
+# Pre-upgrade script: run before the upgrade every time
+##
+
+set -e
+
+###
+# Helper functions
+##
+function info () {
+	printf "\r  [ \033[00;34m..\033[0m ] %s\n" "$1"
+}
+function user () {
+	printf "\r  [ \033[0;33m??\033[0m ] %s " "$1"
+}
+function success () {
+	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"
+}
+function warn () {
+	printf "\r\033[2K  [\033[0;31mWARN\033[0m] %s\n" "$1"
+}
+function fail () {
+	printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
+	echo ''
+	exit 1
+}
+
+# Runs a first-time script if it's Linux
+if [ "$(uname -s)" != "Darwin" ]; then
+	# Linux: Runs Linux-specific setup scripts
+	info "Pre-upgrade: Performing dependency checks for GNU\\Linux"
+	"$dotfilesDirectory"/unix/init.sh; rm -rf init.sh
+	chown -R "$username":"$username" "$dotfilesDirectory"
+fi
