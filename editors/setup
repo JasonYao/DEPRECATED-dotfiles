@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+##
+# Sets up configuration for
+# all terminal editors
+##
+
+editors=(nano vim)
+
+function configure_editor () {
+    if "$dotfiles_directory"/editors/"$1" ; then
+        success "Editors: $1 is now configured"
+    else
+        fail "Editors: $1 failed to be configured"
+    fi
+}
+
+for editor in "${editors[@]}"; do
+    configure_editor "$editor"
+done

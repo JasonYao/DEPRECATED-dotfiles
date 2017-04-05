@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
 
-set -e
+##
+# Configuration for the nano editor
+##
 
-nanorc_configs=(html css javascript json asm c cmake sh nanorc java python tex go ruby)
+nanorc_configs=(
+	html css javascript json asm
+	c cmake sh nanorc java python
+	tex go ruby
+)
 
-if [[ $(uname -s | grep "Linux") == "" ]]; then
+# Sets the correct syntax highlighting directory
+if [[ "$(uname -s)" == "Darwin" ]]; then
 	# OSX's nano config location
 	config_path="/usr/local/share/nano"
 else
@@ -16,9 +23,9 @@ if [[ -f $HOME/.nanorc ]]; then
 	success "Nano: Editor settings have already been set"
 else
 	info "Nano: Editor settings have not been applied yet, applying now"
-	echo "# Nano editor configuration files" > "$HOME"/.nanorc
-
 	{
+		echo "# Nano editor configuration files"
+		echo ""
 		echo "set const"
 		echo "set tabsize 4"
 		echo ""

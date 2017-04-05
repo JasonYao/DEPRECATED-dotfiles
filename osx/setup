@@ -3,7 +3,6 @@
 ##
 # OSX specific setup
 ##
-source ../bin/helper
 
 number_of_spaces=3
 motd_file="/etc/motd"
