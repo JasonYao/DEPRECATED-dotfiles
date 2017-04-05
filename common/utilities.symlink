@@ -28,6 +28,5 @@
 	alias ~="cd ~"                              # ~:            Go Home
 
 # School commands
-	alias ait="cd /Users/Jason/Documents/Documents/NewYorkUniversity/Senior-Year-Fall-2016/AIT"
-	alias ios="cd /Users/Jason/Documents/Documents/NewYorkUniversity/Senior-Year-Fall-2016/iOS"
-	alias oop="cd /Users/Jason/Documents/Documents/NewYorkUniversity/Senior-Year-Fall-2016/OOP"
+	alias nlp="cd /Users/Jason/Documents/Documents/NewYorkUniversity/Senior-Year-Spring-2017/NLP"
+	alias compvis="cd /Users/Jason/Documents/Documents/NewYorkUniversity/Senior-Year-Spring-2017/computer_vision"

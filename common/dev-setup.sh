@@ -5,11 +5,11 @@
 set -e
 
 # Python env stuff
-	python_versions=(3.6.0 2.7.13)
+	python_versions=(3.6.1 2.7.13)
 
 # Java env stuff
 	declare -A java_version
-	java_version[1.8]=8u112
+	java_version[1.8]=8u121
 	java_version[1.7]=7u80
 
 	# We do this because oracle is a bitch and their java 7 download with b14 is corrupted
@@ -18,7 +18,7 @@ set -e
 	java_bin[1.7]=b15
 
 # Ruby env stuff
-	ruby_versions=(2.4.0)
+	ruby_versions=(2.4.1)
 
 # Python check and set
 	if [[ $(which pyenv) == "" ]] && [[ $(uname -s) == "Linux" ]]; then

@@ -16,7 +16,7 @@
 	- [ ] Install XCode Command Line Tools via `xcode-select --install`
 	- [ ] Download [dotfiles](https://github.com/JasonYao/dotfiles)
 	- [ ] Download XCode via App Store
-- [ ] Download IDEs from Jetbrains Toolbox
+- [ ] Download IDEs from [Jetbrains Toolbox](https://www.jetbrains.com/toolbox/)
 	- [ ] IntelliJ IDEA
 	- [ ] CLion
 	- [ ] PyCharm
@@ -25,8 +25,8 @@
 	- To generate secure keys, use: `ssh-keygen -t ed25519 -o -a 256`
 
 ## Daily use programs that don't have casks
-- [ ] Install [NYU Print (B&W & Colour)]()
-- [ ] Install [Little + Micro Snitch]()
-- [ ] Install [Cisco VPN]()
+- [ ] Install [NYU Print B&W](www.nyu.edu/content/dam/nyu/informationTechnology/misc/software/print-service-macv2.pkg)
+- [ ] Install [NYU Print Colour](www.nyu.edu/content/dam/nyu/informationTechnology/misc/software/print-service-color-mac-v2.pkg)
+- [ ] Install [Torguard VPN](https://torguard.net/downloads.php)
 - [ ] Install Microsoft Office
 - [ ] Install Adobe Photoshop + Acrobat
