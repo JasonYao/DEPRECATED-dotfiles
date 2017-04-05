@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
 
+##
 # Sets reasonable OS X defaults
+##
 
-set -e
-
+# Constants
 firewall="/usr/libexec/ApplicationFirewall/socketfilterfw"
 
-# Usage: checkAndSetFirewall "--getblockall" "DISABLED" "--setblockall on" "default to deny incoming traffic" "Default to deny incoming traffic"
-function checkAndSetFirewall () {
+# Apps that you want included in the default dock
+valid_apps=("launchpad" "Notes" "iTunes" "appstore" "systempreferences" "firefox")
+
+# Usage: check_and_set_firewall "--getblockall" "DISABLED" "--setblockall on" "default to deny incoming traffic" "Default to deny incoming traffic"
+function check_and_set_firewall () {
 	if [[ $($firewall "$1" | grep "$2") != "" ]]; then
 		if sudo $firewall $3 > /dev/null ; then
 			success "Firewall: Successfully set $4"
@@ -74,7 +78,6 @@ function repopulate_all_dock_apps() {
 }
 
 # Does this once instead of doing all over each time
-valid_apps=("launchpad" "Notes" "iTunes" "appstore" "systempreferences" "firefox")
 invert_string="grep -v"
 
 for app in "${valid_apps[@]}"; do
@@ -254,8 +257,8 @@ function check_and_manage_dock_folders() {
 	fi
 
 # Sets the firewall rules
-	checkAndSetFirewall "--getblockall" "DISABLED" "--setblockall on" "default to deny incoming traffic" "Default to deny incoming traffic"
-	checkAndSetFirewall "--getstealthmode" "disabled" "--setstealthmode on" "default to activate stealth mode" "Stealth mode"
-	checkAndSetFirewall "--getloggingmode" "off" "--setloggingmode on" "default to log traffic" "Traffic logging"
-	checkAndSetFirewall "--getglobalstate" "disabled" "--setglobalstate on" "firewall to on" "Firewall"
-	checkAndSetFirewall "--getallowsigned" "DISABLED" "--setallowsigned on" "default to allow signed binaries" "Allowing signed binaries"
+	check_and_set_firewall "--getblockall" "DISABLED" "--setblockall on" "default to deny incoming traffic" "Default to deny incoming traffic"
+	check_and_set_firewall "--getstealthmode" "disabled" "--setstealthmode on" "default to activate stealth mode" "Stealth mode"
+	check_and_set_firewall "--getloggingmode" "off" "--setloggingmode on" "default to log traffic" "Traffic logging"
+	check_and_set_firewall "--getglobalstate" "disabled" "--setglobalstate on" "firewall to on" "Firewall"
+	check_and_set_firewall "--getallowsigned" "DISABLED" "--setallowsigned on" "default to allow signed binaries" "Allowing signed binaries"
