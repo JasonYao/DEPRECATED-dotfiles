@@ -124,9 +124,7 @@ function check_and_manage_dock_folders() {
 	check_and_set_default "com.apple.finder ShowRemovableMediaOnDesktop" 1 "Finder: Show removable media on desktop is already been enabled" "-bool true" \
 		"Finder: Show removable media on desktop is now enabled"
 
-# Empty Trash securely by default
-	check_and_set_default "com.apple.finder EmptyTrashSecurely" 1 "Finder: Securely trash delete is already enabled" "-bool true" \
-		"Finder: Secure trash delete is now enabled"
+# NOTE Secure empty trash was removed due to deleterious effects on SSDs, and is thus no longer supported
 
 # Sets battery percentage to be shown
 	check_and_set_default "com.apple.menuextra.battery ShowPercent" 1 "Battery: Show percent battery remaining is already enabled" "-bool true" "Battery: Show percent battery is now enabled"
@@ -191,14 +189,21 @@ function check_and_manage_dock_folders() {
 		success "Dock: Application folder is already on the dock"
 	fi
 
-	# Sets up app expose gesture
-	check_and_set_dock "showAppExposeGestureEnabled" "1" "Trackpad: Show app expose gesture is not enabled" "1" "Trackpad: Show app expose gesture is now enabled" \
-		"Trackpad: Show app expose gesture is already enabled"
-
 # Disables bluetooth if enabled
 	if [[ -f /Library/Preferences/com.apple.Bluetooth.plist ]]; then
-		check_and_set_default "com.apple.Bluetooth.plist ControllerPowerState" 0 "Bluetooth: BT is already disabled" "-bool false" \
+		check_and_set_default "com.apple.Bluetooth.plist ControllerPowerState" 0 "Bluetooth: BT is already disabled" 0 \
 			"Bluetooth: BT is now disabled"
+
+		# Kills the bluetooth server process
+		killall blued
+		# Unloads the daemon
+		launchctl unload /System/Library/LaunchDaemons/com.apple.blued.plist
+
+		# Reloads the daemon
+		launchctl load /System/Library/LaunchDaemons/com.apple.blued.plist
+
+		# Restarts the BT process (basically updates the icon to being disabled)
+		launchctl start com.apple.blued
 	else
 		info "Bluetooth: BT was not found for this device"
 	fi
@@ -209,18 +214,13 @@ function check_and_manage_dock_folders() {
 
 # Sets input languages
 	# Checks for traditional chinese pinyin
-	if [[ $(defaults read com.apple.HIToolbox.plist AppleEnabledInputSources | grep TCIM.Pinyin) == "" ]]; then
-		info "Languages: Traditional Chinese input via pinyin is not installed, installing now"
+	if [[ $(defaults read com.apple.HIToolbox.plist AppleEnabledInputSources | grep ".TCIM.pinyin") == "" ]]; then
+		info "Languages: Adding Mandarin Pinyin input"
 		defaults write com.apple.HIToolbox AppleEnabledInputSources -array-add \
-			'<dict><key>Bundle ID</key><string>com.apple.inputmethod.TCIM</string><key>"Input Mode"</key><string>com.apple.inputmethod.TCIM.Pinyin</string><key>InputSourceKind</key><string>Input Mode</string></dict>'
+			'<dict><key>Bundle ID</key><string>com.apple.inputmethod.TCIM</string><key>Input Mode</key><string>com.apple.inputmethod.TCIM.Pinyin</string><key>InputSourceKind</key><string>Input Mode</string></dict>'
 		success "Languages: Traditional Chinese input via pinyin is now installed"
 	else
 		success "Languages: Traditional Chinese input via pinyin is already installed"
-	fi
-
-	if [[ $(defaults read com.apple.HIToolbox.plist AppleEnabledInputSources | grep .TCIM\" -A 1| grep "Keyboard Input Method") == "" ]]; then
-		defaults write com.apple.HIToolbox AppleEnabledInputSources -array-add \
-			'<dict><key>Bundle ID</key><string>com.apple.inputmethod.TCIM</string><key>InputSourceKind</key><string>Keyboard Input Method</string></dict>'
 	fi
 
 	# Checks for traditional chinese hand writing
@@ -233,8 +233,18 @@ function check_and_manage_dock_folders() {
 		success "Languages: Traditional Chinese input via hand writing is already installed"
 	fi
 
+	# Checks for English keyboard
+	if [[ $(defaults read com.apple.HIToolbox.plist AppleEnabledInputSources | grep "U.S.") == "" ]]; then
+		info "Languages: Adding US keyboard input"
+		defaults write com.apple.HIToolbox AppleEnabledInputSources -array-add \
+			'<dict><key>InputSourceKind</key><string>Keyboard Layout</string><key>KeyboardLayout ID</key><integer>0</integer><key>KeyboardLayout Name</key><string>U.S.</string></dict>'
+		success "Languages: Traditional Chinese input via pinyin is now installed"
+	else
+		success "Languages: Traditional Chinese input via pinyin is already installed"
+	fi
+
 	# Checks for whether the text input switcher is enabled
-	if [[ $(defaults read com.apple.systemuiserver menuExtras | grep TextInput.menu) == "" ]]; then
+	if [[ $(defaults read com.apple.systemuiserver menuExtras | grep "TextInput.menu") == "" ]]; then
 		info "Languages: Text input switcher is not enabled, enabling now"
 		defaults write com.apple.systemuiserver menuExtras -array-add \
 			'<string>/System/Library/CoreServices/Menu Extras/TextInput.menu</string>'
@@ -243,17 +253,22 @@ function check_and_manage_dock_folders() {
 		success "Languages: Text input switcher is already enabled"
 	fi
 
+# Disables indexing of external disks (e.g. network folders)
+	check_and_set_default "/Library/Preferences/com.apple.SpotlightServer.plist" 1 \
+		"Spotlight: External disk indexing is already disabled" "-bool True" "Spotlight: External disk indexing is now disabled"
 
-# Disables indexing and searching of the bootcamp volume if it's named bootcamp (case insensitive)
-	if [[ $(diskutil list | grep -i bootcamp) != "" ]]; then
-		if [[ $(sudo mdutil -s /Volumes/"$(diskutil list | grep -io bootcamp)" | grep disabled) == "" ]]; then
-			sudo mdutil -i off -d /Volumes/"$(diskutil list | grep -io bootcamp)"
-			success "Spotlight: Disabled indexing & searching of bootcamp partition"
+# Disables indexing and searching of the bootcamp volume if there is a bootcamp partition
+	if [[ -d /Volumes/BOOTCAMP ]]; then
+		# There is a bootcamp partition
+		if [[ $(sudo defaults read /Volumes/MacOS/.Spotlight-V100/VolumeConfiguration.plist Exclusions | grep "/Volumes/BOOTCAMP") == "" ]]; then
+			sudo defaults write /Volumes/MacOS/.Spotlight-V100/VolumeConfiguration.plist Exclusions -array-add '/Volumes/BOOTCAMP'
+			sudo launchctl stop com.apple.metadata.mds && sudo launchctl start com.apple.metadata.mds
+			success "Spotlight: Bootcamp partition has been excluded from normal indexing"
 		else
-			success "Spotlight: Indexing & searching of bootcamp partition already disabled"
+			success "Spotlight: Bootcamp partition has already been excluded from normal indexing"
 		fi
 	else
-		info "Spotlight: No bootcamp partition detected"
+		success "Spotlight: There is no bootcamp partition to exclude from indexing"
 	fi
 
 # Sets the firewall rules
