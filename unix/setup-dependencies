@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+##
+# Sets up required dependencies
+##
+
+function check_and_install_package () {
+	info "APT: Checking for $1"
+	if dpkg -s "$1" > /dev/null 2>&1 ; then
+		success "APT: $1 is already installed"
+	else
+		info "APT: $1 not found, installing now"
+		if sudo apt-get install "$1" -y &> /dev/null ; then
+			success "APT: $1 successfully installed"
+		else
+			fail "APT: $1 failed to install"
+		fi
+	fi
+}
+
+function update_and_upgrade () {
+	# Updates & upgrades
+	info "APT: Updating packages"
+	if sudo apt-get update -y > /dev/null ; then
+		success "APT: Packages were updated"
+	else
+		fail "APT: Packages were unable to be updated"
+	fi
+
+	info "APT: Upgrading packages"
+	if sudo apt-get dist-upgrade -y > /dev/null ; then
+		success "APT: Packages were upgraded"
+	else
+		fail "APT: Packages were unable to be upgraded"
+	fi
+}
+
+function auto_remove () {
+	# Auto removes any unnecessary packages
+	info "APT: Auto removing any unnecessary packages"
+	if sudo apt-get autoremove -y > /dev/null ; then
+		success "APT: All unnecessary packages removed"
+	else
+		fail "APT: Unable to remove unnecessary packages"
+	fi
+}
+
+# Does first-time initial setup if the user has root/sudo privileges
+if [[ $(groups | grep 'root\|admin\|sudo') != "" ]]; then
+	# Does server setup
+	update_and_upgrade
+
+	# Checks for dependency packages
+	check_and_install_package wget				# Used in general downloading
+	check_and_install_package git				# Used in general project upkeep
+	check_and_install_package unzip			# Used with dealing with cached dotfile files
+	check_and_install_package build-essential	# Used in pre-compiling rbenv
+
+	# Checks for pyenv dependencies
+	check_and_install_package make
+	check_and_install_package libssl-dev
+	check_and_install_package zlib1g-dev
+	check_and_install_package libbz2-dev
+	check_and_install_package libreadline-dev
+	check_and_install_package libsqlite3-dev
+	check_and_install_package curl
+	check_and_install_package llvm
+	check_and_install_package libncurses5-dev
+	check_and_install_package xz-utils
+	auto_remove
+else
+	warn "APT: $username does not have the correct permissions to install dependencies"
+fi
