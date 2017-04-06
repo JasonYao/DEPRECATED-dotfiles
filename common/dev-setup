@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# Sets up the development environments
-
-set -e
+##
+# Actual dev environment setup
+##
 
 # Python env stuff
 	python_versions=(3.6.1 2.7.13)

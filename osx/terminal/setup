@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# Sets sane iTerm preferences
-
-set -e
+##
+# Configures sane iTerm preferences
+##
 
 iterm_info_plist="/Applications/iTerm.app/Contents/Info.plist"
 iterm_download_link="https://iterm2.com/downloads/stable/latest"
@@ -10,7 +10,7 @@ iterm_download_link="https://iterm2.com/downloads/stable/latest"
 # Sets up fonts
 	if [[ $(echo $HOME/Library/Fonts/* | grep FreeMono) == "" ]]; then
 		info "Font: FreeMono is not installed yet, installing now"
-		cp "$dotfilesDirectory"/osx/terminal/font/FreeMono.ttf "$HOME"/Library/Fonts/
+		cp "$dotfiles_directory"/osx/terminal/font/FreeMono.ttf "$HOME"/Library/Fonts/
 		success "Font: FreeMono is now installed"
 	else
 		success "Font: FreeMono is already installed"
@@ -24,23 +24,27 @@ iterm_download_link="https://iterm2.com/downloads/stable/latest"
 
 		# Checks cache for already downloaded application
 		info "iTerm: Checking cache for prior download"
-		if [[ -f $HOME/.dotfiles_cache/iTerm.zip ]]; then
+		if [[ -f "$HOME"/"$cache_directory"/iTerm.zip ]]; then
 			success "iTerm: Cached version found"
 		else
 			info "iTerm: No cached version found, downloading now"
-			if wget $iterm_download_link -O $HOME/.dotfiles_cache/iTerm.zip -q --show-progress ; then
-				success "iTerm: Successfully downloaded iTerm"
+			if wget $iterm_download_link -O $HOME/"$cache_directory"/iTerm.zip -q --show-progress ; then
+				success "iTerm: Successfully downloaded application"
 			else
-				fail "iTerm: Failed to download iTerm"
+				fail "iTerm: Failed to download application"
 			fi
 		fi
 
 		# Since unzip didn't end up decompressing correctly (application image was not there), we'll use the system's Archive Utility.app instead
-		open -a /System/Library/CoreServices/Applications/Archive\ Utility.app/ $HOME/.dotfiles_cache/iTerm.zip
+		if open -a /System/Library/CoreServices/Applications/Archive\ Utility.app/ $HOME/"$cache_directory"/iTerm.zip ; then
+			success "iTerm: Successfully decompressed application"
+		else
+			fail "iTerm: Failed to decompress application"
+		fi
 
 		# Needs a wait since mv command doesn't wait for archive utility to unzip, only waits for it to open
 		sleep 3
-		mv $HOME/.dotfiles_cache/iTerm.app /Applications
+		mv $HOME/"$cache_directory"/iTerm.app /Applications
 		success "iTerm: Application is now installed"
 	fi
 
@@ -49,8 +53,11 @@ iterm_download_link="https://iterm2.com/downloads/stable/latest"
 		success "iTerm: Preferences have already been linked"
 	else
 		info "iTerm: Preferences have not been linked, linking now"
-		ln -s "$dotfilesDirectory"/osx/terminal/com.googlecode.iterm2.plist "$HOME"/Library/Preferences/com.googlecode.iterm2.plist
-		success "iTerm: Preferences have now been linked"
+		if ln -s "$dotfiles_directory"/osx/terminal/com.googlecode.iterm2.plist "$HOME"/Library/Preferences/com.googlecode.iterm2.plist ; then
+			success "iTerm: Preferences have now been linked"
+		else
+			fail "iTerm: Preferences failed to be linked"
+		fi
 		warn "iTerm: Warning, good preferences have been set, but requires a logout or restart to be enabled"
 	fi
 
@@ -59,6 +66,9 @@ iterm_download_link="https://iterm2.com/downloads/stable/latest"
 		success "iTerm: Application is already backgrounded"
 	else
 		info "iTerm: Application is not backgrounded yet, backgrounding now"
-		perl -i -0pe 's/<\/dict>\n<\/plist>/\t<key>LSUIElement<\/key>\n\t<true\/>\n<\/dict>\n<\/plist>/' $iterm_info_plist
-		success "iTerm: Application is now backgrounded"
+		if perl -i -0pe 's/<\/dict>\n<\/plist>/\t<key>LSUIElement<\/key>\n\t<true\/>\n<\/dict>\n<\/plist>/' $iterm_info_plist ; then
+			success "iTerm: Application is now backgrounded"
+		else
+			fail "iTerm: Application failed to be backgrounded"
+		fi
 	fi

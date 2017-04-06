@@ -1,63 +1,38 @@
 # Lazy Dotfiles: Why do work when you can be lazy
-By Jason Yao
+By [Jason Yao](https://github.com/JasonYao/)
 
 ## Description
-The following are my personal dotfiles, created in order to unify the experience 
+The following are my personal dotfiles,
+created in order to unify the experience
 across all `OSX` and `*nix` systems.
 
-Specifically, this repo sets sane defaults that are used daily in `OSX` settings, 
-along with basic server setup that would otherwise be tedious to setup, including:
-- Non-root user creation
-- Dotfile installation for user
-- Setup of user's SSH key
-- Changes the default SSH settings to more secure defaults (non-standard port, non-root access, etc.)
-- Package auto-update setup
-- `ufw` (server firewall) & `fail2ban` (ip-ban) setup
+## Supported Platforms
+- Ubuntu 16.04 LTS
+- OSX 10.12.x (Sierra)
+
+## Global key commands
+- To toggle show/hide terminal:
+<kbd>⌘</kbd> + <kbd>↓</kbd>
+
+- To update + upgrade the dotfiles:
+```sh
+upgrade
+```
+
+- To uninstall the dotfiles:
+```sh
+uninstall
+```
 
 ## Install
-The following one-liner will setup initial requirements before running through a normal install via the [start script](start.sh)
+The following one-liner will setup
+initial requirements before running
+through a normal install via the [start script](start.sh)
 
-### OSX
 ```sh
-curl -O https://raw.githubusercontent.com/JasonYao/dotfiles/master/start.sh &> /dev/null && bash start.sh; rm -rf start.sh
+bash -e "$(curl -fsSL https://raw.githubusercontent.com/JasonYao/dotfiles/master/start)"
 ```
-
-### Unix
-For a unix server environment
-```sh
-wget https://raw.githubusercontent.com/JasonYao/dotfiles/master/start.sh &> /dev/null && \
-username="jason" password="YOUR PASSWORD HERE" isServer=true bash start.sh; rm -rf start.sh
-```
-
-For a unix personal environment
-```sh
-wget https://raw.githubusercontent.com/JasonYao/dotfiles/master/start.sh &> /dev/null && bash start.sh; rm -rf start.sh
-```
-
-To override values, you can do so by putting it in front of `bash start.sh`
-
-Values available for being overwritten:
-- Username: `username="YOUR USERNAME HERE"`
-- Password: `password="YOUR PASSWORD HERE"`
-- IsServer: `isServer=true` || `isServer=false` *
-- Default Shell: `defaultShell="bash"` || `defaultShell="zsh"`
-- Dotfiles Directory: `dotfilesDirectory="ABSOLUTE/PATH/TO/FOLDER/YOU'D/LIKE/TO/STORE/THE/DOTFILES/IN"`
-- SSH Public Key: `sshPublicKey="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGEB2lB73L2NmzRIfFuQCRvfSyi1Imy8KK/b5mjus44O Jason@Jasons-MacBook-Pro.local"`
-- Git Username: `git_username="YOUR USERNAME HERE"`
-- Git Email: `git_email="YOUR EMAIL HERE"`
-- Git Editor: `git_editor="YOUR EDITOR HERE"`
-- Git Diff Output: `git_diff_output="Some way to parse git diff output"` **
-
-\*  NOTE: The default is that isServer is false, so no real need to pass this flag in entirely if it is not a server environment
-
-** NOTE: An example is [diff-so-fancy](https://github.com/so-fancy/diff-so-fancy)'s `diff-so-fancy | less --tabs=4 -RFX` command
-
-This will symlink the appropriate files in `.dotfiles` to the home directory.
-Everything is configured and tweaked within `~/.dotfiles`.
-
-## Thanks
-This based on a few select things from [Holman's repo](https://github.com/holman/dotfiles),
-so props to him for doing the legwork.
 
 ## License
-This repo is licensed under the terms of the GNU GPL, of which a copy may be found [here](LICENSE)
+This repo is licensed under the terms of the
+GNU GPL v3, of which a copy may be found [here](LICENSE).

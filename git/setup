@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+##
+# Configures git settings on the box
+##
+
+function git_set() {
+	if [[ $(git config -l | grep "$1" | grep "$2") == "" ]]; then
+		git config --global "$1" "$2"
+		success "Git: Set $1 to $2"
+	else
+		success "Git: $1 has already been set to $2"
+	fi
+}
+
+git_set user.name "$git_username"
+git_set user.email "$git_email"
+git_set push.default simple
+git_set color.ui auto
+git_set core.editor "$git_editor"
+git_set core.pager "$git_diff_output"

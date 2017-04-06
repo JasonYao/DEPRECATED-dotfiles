@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+##
+# Installs cask applications
+##
+
+cask_packages=(
+	smcfancontrol synergy filezilla torguard flux
+	little-snitch micro-snitch
+	atom jetbrains-toolbox
+	google-chrome firefox
+	vlc skype qbittorrent mactex texmaker
+)
+
+function check_homebrew_cask_package() {
+	if [[ $(brew cask list | grep "$1") == "" ]]; then
+		info "Homebrew-Cask: Application $1 has not been installed yet, installing now"
+		brew tap homebrew/dupes
+		if brew cask install "$1" &> /dev/null ; then
+			success "Homebrew Casks: Application $1 is now installed"
+		else
+			fail "Homebrew Casks: Application $1 failed to install"
+		fi
+	else
+		success "Homebrew Casks: Application $1 is already installed"
+	fi
+}
+
+# Updates and upgrades brew packages
+	info "Homebrew Casks: Updating brews now"
+	# Note: `brew cask update` is deprecated as of 2017-07-01
+	if brew update; then
+		success  "Homebrew Casks: Brews have been updated"
+	else
+		fail "Homebrew Casks: Brews failed to be updated"
+	fi
+
+# Checks and installs any missing packages
+	info "Homebrew Casks: Checking application statuses"
+	for package in "${cask_packages[@]}"; do
+		check_homebrew_cask_package "${package}"
+	done

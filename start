@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+##
+# Inital setup script for fresh boxes
+##
+
+function info () {
+	printf "\r  [ \033[00;34m..\033[0m ] %s\n" "$1"
+}
+
+function user () {
+	printf "\r  [ \033[0;33m??\033[0m ] %s " "$1"
+}
+
+function success () {
+	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"
+}
+
+function warn () {
+	printf "\r\033[2K  [\033[0;31mWARN\033[0m] %s\n" "$1"
+}
+
+function fail () {
+	printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
+	echo ''
+	exit 1
+}
+
+: "${dotfiles_directory:="$HOME/.dotfiles"}"
+export dotfiles_directory
+
+# Installs the dotfiles
+if [[ -d "$dotfiles_directory" ]]; then
+	success "Initial Install: Dotfiles are already installed"
+else
+	info "Initial Install: Dotfiles are not installed, downloading now"
+	if git clone https://github.com/JasonYao/dotfiles.git "$dotfiles_directory" &> /dev/null ; then
+		success "Initial Install: Dotfiles are now installed, running configuration now"
+		if "$dotfiles_directory"/bin/upgrade ; then
+			success "Initial Install: Dotfiles are now fully installed and configured"
+		else
+			fail "Initial Install: Dotfiles failed to be configured, please try again"
+		fi
+	else
+		fail "Initial Install: Dotfiles failed to download, please check your internet connection"
+	fi
+fi

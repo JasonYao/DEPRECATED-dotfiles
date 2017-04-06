@@ -23,6 +23,8 @@
 	- [ ] WebStorm
 - [ ] Copy or generate SSH keys
 	- To generate secure keys, use: `ssh-keygen -t ed25519 -o -a 256`
+- [ ] Setup firmware password
+- [ ] Setup full disk encryption
 
 ## Daily use programs that don't have casks
 - [ ] Install [NYU Print B&W](www.nyu.edu/content/dam/nyu/informationTechnology/misc/software/print-service-macv2.pkg)

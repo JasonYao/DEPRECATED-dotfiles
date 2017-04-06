@@ -6,11 +6,12 @@ set -e
 
 homebrew_packages=(
 	coreutils wget autoconf automake make nano openssl pyenv pyenv-virtualenv
-	jenv mmv cmake rbenv bash readline diff-so-fancy unrar nmap kubernetes-cli pv
-	grep gnu-tar gnu-sed gawk gzip shellcheck vim node sbt
+	jenv mmv cmake rbenv bash readline diff-so-fancy unrar nmap kubernetes-cli
+	pv grep gnu-tar gnu-sed gawk gzip shellcheck vim node sbt
 )
 
-# Any packages that requires flags upon install should be both above and here
+# Any packages that requires flags upon
+# install should be both above and here
 declare -A flagged_packages
 flagged_packages[grep]=--with-default-names
 flagged_packages[gnu-sed]=--with-default-names
@@ -29,13 +30,6 @@ function check_homebrew_package() {
 		success "Homebrew: Package $1 is already installed"
 	fi
 }
-
-# Installs homebrew if not installed
-	if test ! "$(which brew)" ; then
-		info "Homebrew: Package manager was not found, installing now"
-		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-		success "Homebrew: successfully installed"
-	fi
 
 # Updates and upgrades brew packages
 	info "Homebrew: Updating brews now"
@@ -57,13 +51,3 @@ function check_homebrew_package() {
 	for package in "${homebrew_packages[@]}"; do
 		check_homebrew_package "${package}"
 	done
-
-	success "Homebrew: All packages installed"
-
-# Runs the cask script
-	info "Homebrew: Checking cask app status"
-	if "$dotfilesDirectory"/osx/homebrew/cask.sh; then
-		success "Homebrew: Cask apps are successfully installed"
-	else
-		fail "Homebrew: Cask apps failed to be successfully installed"
-	fi

@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+##
+# GNU/Linux specific setup
+##
+
+# Symlinks all files
+	install_dotfiles
+
+# Sets the user's default shell to bash if it hasn't been done already
+if [[ $(env | grep SHELL | grep "$(which "$default_shell")") == "" ]]; then
+    info "Shell: Setting user's default shell to $default_shell"
+    if [[ $(groups | grep -E 'root|sudo') != "" ]]; then
+		# User has sudo or root, sets up the default shell
+		if usermod -s "$(which "$default_shell")" "$username" ; then
+			success "Shell: $username's default shell has been set to $default_shell"
+		else
+			fail "Shell: $username's default shell failed to be set to $default_shell"
+		fi
+	else
+		info "Shell: Setting shell to $default_shell"
+		if [[ $(grep "setenv SHELL" "$HOME/.profile") == "" ]]; then
+			echo "export SHELL=$(which bash)" >> "$HOME"/.profile
+		else
+			info "Shell: Shell is already set to $default_shell"
+		fi
+		success "Shell: $username's default shell has been set to $default_shell"
+	fi
+fi
+
+# Checks dependency statuses
+    info "Dependencies: Checking status now"
+    if "$dotfiles_directory"/unix/setup-dependencies ; then
+        success "Dependencies: All required dependencies are fully setup"
+    else
+        fail "Dependencies: Some required dependencies failed to setup correctly"
+    fi
+
+# Sets up dev environments
+    info "Dev Environment Managers: Checking environment manager statuses"
+    if "$dotfiles_directory"/unix/setup-env-managers ; then
+        success "Dev Environment Managers: All dev environment managers are fully setup"
+    else
+        fail "Dev Environments Managers: Some dev environment managers failed to be setup"
+    fi
+
+    info "Dev Environments: Checking environment statuses"
+    if "$dotfiles_directory"/common/dev-setup ; then
+        success "Dev Environments: All dev environments are fully setup"
+    else
+        fail "Dev Environments: Some dev environments failed to be setup"
+    fi
+
+# Setup nice diffing for git
+	export PATH="$HOME/.fancy:$PATH"
+	if [[ $(which diff-so-fancy) == "" ]]; then
+		info "Fancy Diff: Package was not found, downloading now"
+		if git clone https://github.com/so-fancy/diff-so-fancy.git "$HOME"/.fancy &> /dev/null ; then
+			success "Fancy Diff: Package is now installed"
+		else
+			fail "Fancy Diff: Package failed to install"
+		fi
+	else
+		success "Fancy Diff: Package is already installed, updating now"
+		if git -C "$HOME"/.fancy pull &> /dev/null ; then
+			success "Fancy Diff: Package is now updated"
+		else
+			warn "Fancy Diff: Package failed to update"
+		fi
+	fi

@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+
+##
+# Helper script containing
+# useful, global functions
+##
+
+##
+# Default values
+##
+: "${username:="$(whoami)"}"
+: "${default_shell:="bash"}"
+
+: "${dotfiles_directory:="$HOME/.dotfiles"}"
+: "${cache_directory:="$HOME/.dotfiles_cache"}"
+
+: "${ssh_public_key:="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhNCsxxzqX4c0mKcEmuiDdjnaHg2eQtmaTR3RWolf8F Jason@Jasons-MacBook-Pro.local"}"
+: "${git_editor:="vim"}"
+: "${git_username:="Jason Yao"}"
+: "${git_email:="jasony.edu@gmail.com"}"
+export username
+export default_shell
+
+export dotfiles_directory
+export cache_directory
+
+export ssh_public_key
+export git_editor
+export git_username
+export git_email
+
+##
+# Pretty output functions
+##
+function info () {
+	printf "\r  [ \033[00;34m..\033[0m ] %s\n" "$1"
+}
+function user () {
+	printf "\r  [ \033[0;33m??\033[0m ] %s " "$1"
+}
+function success () {
+	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"
+}
+function warn () {
+	printf "\r\033[2K  [\033[0;31mWARN\033[0m] %s\n" "$1"
+}
+function fail () {
+	printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
+	echo ''
+	exit 1
+}
+
+export -f info
+export -f user
+export -f success
+export -f warn
+export -f fail
+
+##
+# Common functions
+##
+function link_file () {
+  local src=$1 dst=$2
+
+  local overwrite='' backup='' skip=''
+  local action=''
+
+	if [ -f "$dst" ] || [ -d "$dst" ] || [ -L "$dst" ]
+  then
+
+    if [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ]
+    then
+      local currentSrc=$(readlink "$dst")
+
+      if [ "$currentSrc" == "$src" ]
+      then
+
+        skip=true;
+
+      else
+
+        user "File already exists: $dst ($(basename "$src")), what do you want to do?
+        [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
+        read -rn 1 action
+
+        case "$action" in
+          o )
+            overwrite=true;;
+          O )
+            overwrite_all=true;;
+          b )
+            backup=true;;
+          B )
+            backup_all=true;;
+          s )
+            skip=true;;
+          S )
+            skip_all=true;;
+          * )
+            ;;
+        esac
+
+      fi
+
+    fi
+
+    overwrite=${overwrite:-$overwrite_all}
+    backup=${backup:-$backup_all}
+    skip=${skip:-$skip_all}
+
+    if [ "$overwrite" == "true" ]
+    then
+      rm -rf "$dst"
+      success "Removed $dst"
+    fi
+
+    if [ "$backup" == "true" ]
+    then
+      mv "$dst" "${dst}.backup"
+      success "Moved $dst to ${dst}.backup"
+    fi
+
+    if [ "$skip" == "true" ]
+    then
+      success "Skipped $src"
+    fi
+  fi
+
+  if [ "$skip" != "true" ]  # "false" or empty
+  then
+    ln -s "$1" "$2"
+	if [ "$(uname -s)" == "Linux" ]; then
+		chown -R "$username:$username" "$2"
+	fi
+
+    success "Linked $1 to $2"
+  fi
+}
+
+function install_dotfiles () {
+	info 'Installing dotfiles'
+	local overwrite_all=false backup_all=false skip_all=false
+
+	for src in $(find -H "$dotfiles_directory" -maxdepth 3 -name '*.symlink')
+	do
+		dst="$HOME/.$(basename "${src%.*}")"
+		link_file "$src" "$dst"
+	done
+}
+
+export -f link_file
+export -f install_dotfiles
