@@ -213,6 +213,12 @@ function check_and_manage_dock_folders() {
 		"User: Guest account is now disabled"
 
 # Sets input languages
+	# Traditional chinese pinyin dependency check
+	if [[ $(defaults read com.apple.HIToolbox.plist AppleEnabledInputSources | grep "inputmethod.TCIM\"") == "" ]]; then
+		defaults write com.apple.HIToolbox AppleEnabledInputSources -array-add \
+			'<dict><key>Bundle ID</key><string>com.apple.inputmethod.TCIM</string><key>InputSourceKind</key><string>Keyboard Input Method</string></dict>'
+	fi
+
 	# Checks for traditional chinese pinyin
 	if [[ $(defaults read com.apple.HIToolbox.plist AppleEnabledInputSources | grep ".TCIM.pinyin") == "" ]]; then
 		info "Languages: Adding Mandarin Pinyin input"
