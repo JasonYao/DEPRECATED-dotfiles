@@ -4,7 +4,7 @@
 # Uninstalls any vestigial
 # dotfiles-related files/directories
 ##
-source helper
+source "$(dirname "$0")"/helper
 
 # Because we created a cache directory, we'll need to remove it.
 if [[ -d "$cache_directory" ]]; then
