@@ -209,8 +209,8 @@ function check_and_manage_dock_folders() {
 	fi
 
 # Disables guest accounts if enabled
-	check_and_set_default "com.apple.loginwindow.plist GuestEnabled" 0 "User: Guest account is already disabled" "-bool false" \
-		"User: Guest account is now disabled"
+	warn "User: Guest account disabling is currently disabled for Sierra until bugfixed"
+	#check_and_set_default "com.apple.loginwindow.plist GuestEnabled" 0 "User: Guest account is already disabled" "-bool false" "User: Guest account is now disabled"
 
 # Sets input languages
 	# Traditional chinese pinyin dependency check
