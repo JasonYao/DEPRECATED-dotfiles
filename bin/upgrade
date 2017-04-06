@@ -4,7 +4,7 @@
 # Upgrade script that is run
 ##
 
-. helper
+source "$(dirname "$0")"/helper
 
 # Runs OS-specific scripts
 if [[ "$(uname -s)" == "Darwin" ]]; then
