@@ -30,7 +30,7 @@ initial requirements before running
 through a normal install via the [start script](start.sh)
 
 ```sh
-bash -e "$(curl -fsSL https://raw.githubusercontent.com/JasonYao/dotfiles/master/start)"
+curl -s https://raw.githubusercontent.com/JasonYao/dotfiles/master/start | bash
 ```
 
 ## License
