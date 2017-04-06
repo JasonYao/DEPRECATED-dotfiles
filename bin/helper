@@ -8,15 +8,22 @@
 ##
 # Default values
 ##
+: "${username:="$(whoami)"}"
+: "${default_shell:="bash"}"
+
 : "${dotfiles_directory:="$HOME/.dotfiles"}"
 : "${cache_directory:="$HOME/.dotfiles_cache"}"
+
 : "${ssh_public_key:="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhNCsxxzqX4c0mKcEmuiDdjnaHg2eQtmaTR3RWolf8F Jason@Jasons-MacBook-Pro.local"}"
 : "${git_editor:="vim"}"
 : "${git_username:="Jason Yao"}"
 : "${git_email:="jasony.edu@gmail.com"}"
+export username
+export default_shell
 
 export dotfiles_directory
 export cache_directory
+
 export ssh_public_key
 export git_editor
 export git_username
@@ -143,22 +150,3 @@ function install_dotfiles () {
 
 export -f link_file
 export -f install_dotfiles
-
-##
-# Unix-specific functions
-##
-function check_and_install_package () {
-	info "Checking for $1"
-	if dpkg -s "$1" > /dev/null 2>&1 ; then
-		success "$1 is already installed"
-	else
-		info "$1 not found, installing now"
-		if sudo apt-get install "$1" -y &> /dev/null ; then
-			success "$1 successfully installed"
-		else
-			fail "$1 failed to install"
-		fi
-	fi
-}
-
-export -f check_and_install_package

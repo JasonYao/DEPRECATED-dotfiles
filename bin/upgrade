@@ -23,6 +23,25 @@ else
 	fi
 fi
 
+# Sets up private bin
+if [[ -d "$HOME/.bin" ]]; then
+	success ".bin: Private bin is already set up"
+else
+	info ".bin: Private bin has not been setup, setting up now"
+	if mkdir "$HOME"/.bin ; then
+        success ".bin: Private bin folder is now created"
+    else
+        fail ".bin: Private bin folder failed to be created"
+    fi
+
+    # Symlinks all the scripts to their correct place
+    if ln -s "$dotfiles_directory"/bin/* "$HOME"/.bin ; then
+        success ".bin: Private bin scripts are now all symlinked"
+    else
+        fail ".bin: Private bin scripts failed to symlink correctly"
+    fi
+fi
+
 # Sets up git environment
 info "Git: Checking current environment"
 if "$dotfiles_directory"/git/setup ; then

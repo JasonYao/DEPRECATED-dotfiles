@@ -7,6 +7,21 @@
 number_of_spaces=3
 motd_file="/etc/motd"
 
+function check_homebrew_status () {
+	info "Homebrew: Checking brew status"
+	if [[ $(which brew) == "" ]]; then
+		info "Homebrew: Not found, installing now"
+		if echo "\r" | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" ; then
+			success "Homebrew: Package manager is now successfully installed"
+		else
+			fail "Homebrew: Package manager failed to install"
+		fi
+	else
+		success "Homebrew: Package manager is already installed"
+	fi
+}
+export -f check_homebrew_status
+
 # Symlinks all files
 install_dotfiles
 
@@ -22,22 +37,14 @@ install_dotfiles
 	fi
 
 # Checks for OSX defaults
-	if "$dotfiles_directory"/osx/set-defaults ; then
+	if "$dotfiles_directory"/osx/setup-defaults ; then
 		success "OSX: Sane defaults installed"
 	else
 		fail "OSX: Failed to set sane defaults"
 	fi
 
 # Homebrew status check
-	info "Homebrew: Checking brew status"
-	if [[ $(which brew) == "" ]]; then
-		info "Homebrew: Not found, installing now"
-		if echo "\r" | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" ; then
-			success "Homebrew: Successfully now installed"
-		else
-			fail "Homebrew: Failed to install"
-		fi
-	fi
+	check_homebrew_status
 
 # GNU Bash 4+ check due to using associative arrays
 	if [[ $(which bash) == "/bin/bash" ]]; then
@@ -66,11 +73,11 @@ install_dotfiles
 	fi
 
 # Development environment check
-	info "Dev Env: Checking environment status"
+	info "Dev Environment: Checking environment status"
 	if "$dotfiles_directory"/common/dev-setup; then
-		success "Dev Env: All environments are installed and ready"
+		success "Dev Environment: All environments are installed and ready"
 	else
-		fail "Dev Env: Failed to install some environments correctly"
+		fail "Dev Environment: Failed to install some environments correctly"
 	fi
 
 # iTerm environment check
