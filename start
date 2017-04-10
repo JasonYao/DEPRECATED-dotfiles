@@ -29,6 +29,15 @@ function fail () {
 : "${dotfiles_directory:="$HOME/.dotfiles"}"
 export dotfiles_directory
 
+# Installs xcode command line tools and accepts the license
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	if sudo xcodebuild -license accept ; then
+		success "Xcode: Command-line tools successfully installed"
+	else
+		fail "Xcode: Command-line tools failed to be installed"
+	fi
+fi
+
 # Installs the dotfiles
 if [[ -d "$dotfiles_directory" ]]; then
 	success "Initial Install: Dotfiles are already installed"
