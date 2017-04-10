@@ -148,5 +148,34 @@ function install_dotfiles () {
 	done
 }
 
+function unlink_files () {
+	# Iterates through all symlinks in the HOME directory
+	ls -la "$HOME" | grep "\->" | while read symlink; do
+	    if [[ $(echo "$symlink" | grep "$dotfiles_directory") != "" ]]; then
+			# Symlink links to the dotfiles, isolates filename and removes it
+			filename=$(echo "$symlink" | grep -o -P '(?<=(\d{4})|(\d{2}:\d{2}))( (\S+))*\s*(?= ->)' | sed 's/^[[:space:]]*//')
+			if rm "$HOME/$filename" ; then
+				success "Unlink: Dotfile symlink file '$filename' is now removed"
+			else
+				fail "Unlink: Dotfile symlink file '$filename' failed to be removed"
+			fi
+	    fi
+	done
+}
+
+function remove_directory () {
+	if [[ -d "$1" ]]; then
+		if rm -rf "$1" ; then
+			success "Uninstall: Directory $1 is now removed"
+		else
+			fail "Uninstall: Directory $1 failed to be removed, try checking directory permissions"
+		fi
+	else
+		success "Uninstall: Directory $1 is already removed"
+	fi
+}
+
 export -f link_file
 export -f install_dotfiles
+export -f unlink_files
+export -f remove_directory

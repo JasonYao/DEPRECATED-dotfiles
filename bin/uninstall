@@ -6,15 +6,11 @@
 ##
 source "$(dirname "$0")"/helper
 
-# Because we created a cache directory, we'll need to remove it.
-if [[ -d "$cache_directory" ]]; then
-	if rm -rf "$cache_directory" ; then
-		success "Uninstall: Cache directory is now removed"
-	else
-		fail "Uninstall: Cache directory failed to be removed, try checking directory permissions"
-	fi
-fi
+# Removes dotfiles specific folders from the $HOME directory
+remove_directory "$cache_directory"
+remove_directory "$HOME/.bin"
 
-# TODO removes symlinks from the $HOME directory
+# Removes symlinks from the $HOME directory
+unlink_files
 
 success "Uninstall: All vestigial files and directories have been removed"
