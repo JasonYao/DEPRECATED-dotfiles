@@ -96,19 +96,3 @@ install_dotfiles
 	else
 		fail "Background: Desktop image failed to be set"
 	fi
-
-# Sets up designated spaces
-	warn "Spaces: This setup is broken on macOS Sierra, please wait for a patch to fix this issue"
-	#	info "Spaces: Checking for $number_of_spaces spaces"
-	#	if [[ $(defaults read com.apple.spaces | grep name | wc -l) < $number_of_spaces ]]; then
-	#		info "Spaces: Currently only $(defaults read com.apple.spaces | grep name | wc -l) spaces are set up, adding now"
-	#		while [[ $(defaults read com.apple.spaces | grep name | wc -l) < $number_of_spaces ]]; do
-	#			if osascript $HOME/.dotfiles/osx/scripts/add_space &> /dev/null; then
-	#				success "Spaces: $(defaults read com.apple.spaces | grep name | wc -l) spaces now setup"
-	#			else
-	#				fail "Spaces: Failed to setup spaces, please check accessability to see if iTerm has control permissions"
-	#			fi
-	#		done
-	#	else
-	#		success "Spaces: $number_of_spaces spaces are already set up"
-	#	fi

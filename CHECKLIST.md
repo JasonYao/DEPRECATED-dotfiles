@@ -13,9 +13,9 @@
 - [ ] Chrome add-on install
 	- [ ] [uBlock Origin](https://chrome.google.com/webstore/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm?hl=en)
 - [ ] Dev setup
-	- [ ] Install XCode Command Line Tools via `xcode-select --install`
+	- [ ] Install Xcode Command Line Tools via `xcode-select --install`
 	- [ ] Download [dotfiles](https://github.com/JasonYao/dotfiles)
-	- [ ] Download XCode via App Store
+	- [ ] Download Xcode via App Store
 - [ ] Download IDEs from [Jetbrains Toolbox](https://www.jetbrains.com/toolbox/)
 	- [ ] IntelliJ IDEA
 	- [ ] CLion
@@ -23,6 +23,7 @@
 	- [ ] WebStorm
 - [ ] Copy or generate SSH keys
 	- To generate secure keys, use: `ssh-keygen -t ed25519 -o -a 256`
+- [ ] Add 3 spaces to mission control
 - [ ] Setup firmware password
 - [ ] Setup full disk encryption
 
