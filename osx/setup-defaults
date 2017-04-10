@@ -29,7 +29,7 @@ function check_and_set_firewall () {
 # $4 = target_type_and_value
 # $5 = message_success
 function check_and_set_default() {
-	if [[ $(defaults read "$1" 2> /dev/null) == "$2" ]]; then
+	if [[ $(defaults read $1 2> /dev/null) == "$2" ]]; then
 		success "$3"
 	else
 		defaults write $1 $4
@@ -43,7 +43,7 @@ function check_and_set_default() {
 # $4 = target_type_and_value
 # $5 = message_success
 function sudo_check_and_set_default() {
-	if [[ $(sudo defaults read "$1" 2> /dev/null) == "$2" ]]; then
+	if [[ $(sudo defaults read $1 2> /dev/null) == "$2" ]]; then
 		success "$3"
 	else
 		sudo defaults write $1 $4
@@ -126,11 +126,11 @@ function check_and_manage_dock_folders() {
 # NOTE Secure empty trash was removed due to deleterious effects on SSDs, and is thus no longer supported
 
 # Disable press-and-hold for keys in favor of key repeat
-	check_and_set_default "-g ApplePressAndHoldEnabled" "0" "Keyboard: Press & hold has already been disabled" "-bool false" "Keyboard: Press & hold has been disabled"
+	check_and_set_default "-g ApplePressAndHoldEnabled" 0 "Keyboard: Press & hold has already been disabled" "-bool false" "Keyboard: Press & hold is now disabled"
 
 # Sets a really fast key repeat
-	check_and_set_default "NSGlobalDomain KeyRepeat" 1 "Keyboard: 0-delay key repeat has already been enabled" "-int 1" "Keyboard: 0-delay key repeat has been enabled"
-	check_and_set_default "NSGlobalDomain InitialKeyRepeat" 10 "Keyboard: 0-delay initial key repeat has already been enabled" "-int 10" "Keyboard: 0-delay initial key repeat is now enabled"
+	check_and_set_default "NSGlobalDomain KeyRepeat" "1" "Keyboard: 0-delay key repeat has already been enabled" "-int 1" "Keyboard: 0-delay key repeat is now enabled"
+	check_and_set_default "NSGlobalDomain InitialKeyRepeat" "10" "Keyboard: 0-delay initial key repeat has already been enabled" "-int 10" "Keyboard: 0-delay initial key repeat is now enabled"
 
 # Sets the Finder prefs for showing a few different volumes on the Desktop
 	check_and_set_default "com.apple.finder ShowHardDrivesOnDesktop" 1 "Finder: Show hard drives on desktop is already enabled" "-bool true" \
@@ -144,7 +144,7 @@ function check_and_manage_dock_folders() {
 	check_and_set_default "com.apple.menuextra.battery ShowPercent" 1 "Battery: Show percent battery remaining is already enabled" "-bool true" "Battery: Show percent battery is now enabled"
 
 # Sets the trackpad speed to max (to set to another value, set between 0 ~ 3, to disable set to -1)
-	check_and_set_default "-g com.apple.trackpad.scaling" 3.0 "Trackpad: Tracking speed is already max" "-float 3.0" "Trackpad: Tracking speed is now set to max"
+	check_and_set_default "-g com.apple.trackpad.scaling" "6" "Trackpad: Tracking speed is already max" "-int 6" "Trackpad: Tracking speed is now set to max"
 
 # Disables "natural" scrolling
     check_and_set_default "-g com.apple.swipescrolldirection" 0 "Trackpad: Natural scrolling is already disabled" "-bool FALSE" "Trackpad: Natural scrolling is now disabled"
@@ -306,6 +306,10 @@ function check_and_manage_dock_folders() {
 	else
 		success "Spotlight: There is no bootcamp partition to exclude from indexing"
 	fi
+
+# Disables automatic rearranging of spaces based on recent use
+check_and_set_default "com.apple.dock mru-spaces" 0 "Mission Control: Automatic rearranging spaces has already been disabled" \
+	"-bool false" "Mission Control: Automatic rearranging spaces is now disabled"
 
 # Sets the firewall rules
 	check_and_set_firewall "--getblockall" "DISABLED" "--setblockall on" "default to deny incoming traffic" "Default to deny incoming traffic"
