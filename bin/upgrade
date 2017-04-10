@@ -57,3 +57,11 @@ if "$dotfiles_directory"/editors/setup ; then
 else
 	fail "Editors: Some terminal editors failed to be configured"
 fi
+
+# Sets up SSH environment
+info "SSH: Checking current configurations"
+if "$dotfiles_directory"/ssh/setup ; then
+	success "SSH: All SSH settings are now configured"
+else
+	fail "SSH: Some SSH settings failed to be configured"
+fi

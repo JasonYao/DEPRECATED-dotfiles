@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+##
+# SSH setup
+##
+
+ssh_directory="$HOME/.ssh"
+
+function set_authorised_keys() {
+	echo "$ssh_public_key" >> "$ssh_directory/authorized_keys"
+	chmod 600 "$ssh_directory/authorized_keys"
+	chown -R "$username":"$username" "$ssh_directory"
+	success "SSH: Installed SSH key access for $username"
+}
+
+# Checks the SSH directory
+if [[ -d "$ssh_directory" ]]; then
+	success "SSH: SSH directory is already created"
+else
+	info "SSH: Setting up SSH directory"
+	if mkdir -p "$ssh_directory" ; then
+		success "SSH: SSH directory is now created"
+	else
+		fail "SSH: SSH directory failed to be created, please check permissions"
+	fi
+	chmod 700 "$ssh_directory"
+fi
+
+# Checks for authorised keys for *nix systems
+if [[ "$(uname -s)" == "Linux" ]]; then
+	if [[ -f "$ssh_directory/authorized_keys" ]]; then
+		success "SSH: Authorised keys are already installed"
+
+		# Checks if the ssh public key is up to date
+		if [[ $(cat "$ssh_directory/authorized_keys" | grep "$ssh_public_key") == "" ]]; then
+			set_authorised_keys
+		fi
+	else
+		info "SSH: Authorised keys are not installed yet, installing now"
+		set_authorised_keys
+	fi
+fi
+
+# Checks the config file
+if [[ -f "$ssh_directory/config" ]]; then
+	success "SSH: SSH configuration is already setup"
+else
+	info "SSH: Setting up SSH configuration"
+	if printf "Host *\n  ServerAliveInterval 60" > "$ssh_directory/config" ; then
+		success "SSH: SSH configuration is now setup"
+	else
+		fail "SSH: SSH configuration failed to be setup"
+	fi
+fi
