@@ -37,6 +37,20 @@ function check_and_set_default() {
 	fi
 }
 
+# $1 = plist_source
+# $2 = target_value
+# $3 = message_already_complete
+# $4 = target_type_and_value
+# $5 = message_success
+function sudo_check_and_set_default() {
+	if [[ $(sudo defaults read "$1" 2> /dev/null) == "$2" ]]; then
+		success "$3"
+	else
+		sudo defaults write $1 $4
+		success "$5"
+	fi
+}
+
 # $1 = preference_name
 # $2 = target_value
 # $3 = not_enabled_info_message
@@ -109,6 +123,8 @@ function check_and_manage_dock_folders() {
 	fi
 }
 
+# NOTE Secure empty trash was removed due to deleterious effects on SSDs, and is thus no longer supported
+
 # Disable press-and-hold for keys in favor of key repeat
 	check_and_set_default "-g ApplePressAndHoldEnabled" "0" "Keyboard: Press & hold has already been disabled" "-bool false" "Keyboard: Press & hold has been disabled"
 
@@ -123,8 +139,6 @@ function check_and_manage_dock_folders() {
 		"Finder: Show external hard drives on desktop is now enabled"
 	check_and_set_default "com.apple.finder ShowRemovableMediaOnDesktop" 1 "Finder: Show removable media on desktop is already been enabled" "-bool true" \
 		"Finder: Show removable media on desktop is now enabled"
-
-# NOTE Secure empty trash was removed due to deleterious effects on SSDs, and is thus no longer supported
 
 # Sets battery percentage to be shown
 	check_and_set_default "com.apple.menuextra.battery ShowPercent" 1 "Battery: Show percent battery remaining is already enabled" "-bool true" "Battery: Show percent battery is now enabled"
@@ -149,7 +163,8 @@ function check_and_manage_dock_folders() {
 # Enables recent applications stack in dock
 	if [[ $(defaults read com.apple.Dock persistent-others | grep recents-tile) == "" ]]; then
 		info "Dock: Recent applications stack is not installed, installing now"
-		defaults write com.apple.dock persistent-others -array-add '{"tile-data" = {"list-type" = 1;}; "tile-type" = "recents-tile";}'; killall Dock
+		defaults write com.apple.dock persistent-others -array-add '{"tile-data" = {"list-type" = 1;}; "tile-type" = "recents-tile";}'
+		killall Dock
 		success "Dock: Recent applications stack is now installed"
 	else
 		success "Dock: Recent applications stack is already installed"
@@ -191,19 +206,24 @@ function check_and_manage_dock_folders() {
 
 # Disables bluetooth if enabled
 	if [[ -f /Library/Preferences/com.apple.Bluetooth.plist ]]; then
-		check_and_set_default "com.apple.Bluetooth.plist ControllerPowerState" 0 "Bluetooth: BT is already disabled" 0 \
-			"Bluetooth: BT is now disabled"
+		if [[ $(defaults read com.apple.Bluetooth.plist ControllerPowerState 2> /dev/null) == "0" ]]; then
+			success "Bluetooth: BT is already disabled"
+		else
+			defaults write com.apple.Bluetooth.plist ControllerPowerState 0
+			success "Bluetooth: BT is now disabled"
 
-		# Kills the bluetooth server process
-		killall blued
-		# Unloads the daemon
-		launchctl unload /System/Library/LaunchDaemons/com.apple.blued.plist
+			# Kills the bluetooth server process
+			killall blued
 
-		# Reloads the daemon
-		launchctl load /System/Library/LaunchDaemons/com.apple.blued.plist
+			# Unloads the daemon
+			launchctl unload /System/Library/LaunchDaemons/com.apple.blued.plist
 
-		# Restarts the BT process (basically updates the icon to being disabled)
-		launchctl start com.apple.blued
+			# Reloads the daemon
+			launchctl load /System/Library/LaunchDaemons/com.apple.blued.plist
+
+			# Restarts the BT process (basically updates the icon to being disabled)
+			launchctl start com.apple.blued
+		fi
 	else
 		info "Bluetooth: BT was not found for this device"
 	fi
@@ -259,8 +279,18 @@ function check_and_manage_dock_folders() {
 		success "Languages: Text input switcher is already enabled"
 	fi
 
+# Enables dark mode
+	if [[ $(sudo defaults read NSGlobalDomain AppleInterfaceStyle 2> /dev/null) == "Dark" ]]; then
+		success "Theme: Dark mode is already turned on"
+	else
+		sudo defaults write NSGlobalDomain AppleInterfaceStyle Dark
+		# Note: killall -KILL SystemUIServer doesn't do a full reset of the menubar, so a re-login is required
+		warn "Theme: Dark mode is now enabled, but requires a re-login for the menubar to reset"
+		killall Dock
+	fi
+
 # Disables indexing of external disks (e.g. network folders)
-	check_and_set_default "/Library/Preferences/com.apple.SpotlightServer.plist" 1 \
+	sudo_check_and_set_default "/Library/Preferences/com.apple.SpotlightServer.plist ExternalVolumesIgnore" 1 \
 		"Spotlight: External disk indexing is already disabled" "-bool True" "Spotlight: External disk indexing is now disabled"
 
 # Disables indexing and searching of the bootcamp volume if there is a bootcamp partition
