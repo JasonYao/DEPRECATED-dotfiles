@@ -15,9 +15,12 @@
 : "${cache_directory:="$HOME/.dotfiles_cache"}"
 
 : "${ssh_public_key:="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhNCsxxzqX4c0mKcEmuiDdjnaHg2eQtmaTR3RWolf8F Jason@Jasons-MacBook-Pro.local"}"
+
 : "${git_editor:="vim"}"
 : "${git_username:="Jason Yao"}"
 : "${git_email:="jasony.edu@gmail.com"}"
+: "${git_diff_output:="diff-so-fancy | less --tabs=4 -RFX"}"
+
 export username
 export default_shell
 
@@ -28,6 +31,7 @@ export ssh_public_key
 export git_editor
 export git_username
 export git_email
+export git_diff_output
 
 ##
 # Pretty output functions
