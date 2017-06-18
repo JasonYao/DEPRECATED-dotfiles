@@ -12,7 +12,7 @@ across all `macOS` and `*nix` systems.
 - [macOS only] Downloads a bunch of useful applications ([Firefox](https://www.mozilla.org/en-US/firefox/),  [smcFanControl](https://www.eidac.de/), [JetBrains Toolbox](https://www.jetbrains.com/toolbox/), [vlc](https://www.videolan.org/vlc/index.html), etc.)
 
 - Secures and locks down the system via proper firewalling
-- Sets up proper dev environments (Python, Java, Ruby) (TODO Golang)
+- Sets up proper dev environments (Python, Java, Ruby, Golang)
 - Sets up proper git environment with a better [diff](https://github.com/so-fancy/diff-so-fancy)
 - [macOS only] Adds iTerm 2 [shell integrations](https://www.iterm2.com/documentation-shell-integration.html)
 
