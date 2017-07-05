@@ -27,6 +27,8 @@
 	alias .6='cd ../../../../../../'            # Go back 6 directory levels
 	alias ~="cd ~"                              # ~:            Go Home
 
-# School commands
-	alias nlp="cd /Users/Jason/Documents/Documents/NewYorkUniversity/Senior-Year-Spring-2017/NLP"
-	alias compvis="cd /Users/Jason/Documents/Documents/NewYorkUniversity/Senior-Year-Spring-2017/computer_vision"
+# Quick Access commands
+	alias mm="cd /Users/jason/Documents/Documents/Jobs/MediaMath"
+
+# Git commands
+	alias gsno="git status -uno" # Displays git status without the untracked files

@@ -1,5 +1,6 @@
 # Setup checklist for new computers
 ## General
+- [ ] Install [Lastpass](TODO)
 - [ ] Firefox add-on install
 	- [ ] [uBlock Origin](https://addons.mozilla.org/en-us/firefox/addon/ublock-origin/)
 	- [ ] [RefControl](https://addons.mozilla.org/en-US/firefox/addon/refcontrol/)
@@ -12,24 +13,57 @@
 	- [ ] [Lastpass](https://lastpass.com/misc_download2.php)
 - [ ] Chrome add-on install
 	- [ ] [uBlock Origin](https://chrome.google.com/webstore/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm?hl=en)
+- [ ] Copy or generate SSH keys
+	- To generate secure keys, use: `ssh-keygen -t ed25519 -o -a 512`
+- [ ] Setup firmware password
+- [ ] Setup full disk encryption
+- [ ] Move folders into position
+	- [ ] Documents
+	- [ ] Projects
+	- [ ] Torrents
+- [ ] Application Installation
+	- [ ] Microsoft Office
+	- [ ] Adobe Photoshop
+	- [ ] Adobe Acrobat DC
+
+## macOS
+- [ ] Add 3 spaces to mission control
+- [ ] Add folders to `finder` sidebar
+	- [ ] current apartment
+	- [ ] torrents
+	- [ ] current job
 - [ ] Dev setup
-	- [ ] Install Xcode Command Line Tools via `xcode-select --install`
-	- [ ] Download [dotfiles](https://github.com/JasonYao/dotfiles)
+	- [ ] Install [dotfiles](https://github.com/JasonYao/dotfiles)
 	- [ ] Download Xcode via App Store
 - [ ] Download IDEs from [Jetbrains Toolbox](https://www.jetbrains.com/toolbox/)
 	- [ ] IntelliJ IDEA
 	- [ ] CLion
 	- [ ] PyCharm
 	- [ ] WebStorm
-- [ ] Copy or generate SSH keys
-	- To generate secure keys, use: `ssh-keygen -t ed25519 -o -a 256`
-- [ ] Add 3 spaces to mission control
-- [ ] Setup firmware password
-- [ ] Setup full disk encryption
+	- [ ] Gogland
 
-## Daily use programs that don't have casks
-- [ ] Install [NYU Print B&W](www.nyu.edu/content/dam/nyu/informationTechnology/misc/software/print-service-macv2.pkg)
-- [ ] Install [NYU Print Colour](www.nyu.edu/content/dam/nyu/informationTechnology/misc/software/print-service-color-mac-v2.pkg)
-- [ ] Install [Torguard VPN](https://torguard.net/downloads.php)
-- [ ] Install Microsoft Office
-- [ ] Install Adobe Photoshop + Acrobat
+## Windows
+- [ ] macOS Laptop only
+	- [ ] Install Bootcamp
+	- [ ] Install [Lubbos Fan Control](TODO)
+- [ ] Priority Setup
+	- [ ] Install [Nvidia drivers](TODO)
+	- [ ] Install [MacDrive](TODO)
+
+- [ ] Tertiary Setup
+	- [ ] Flux
+	- [ ] VLC
+	- [ ] iTunes
+	- [ ] Discord
+	- [ ] qBittorent
+	- [ ] OBS
+	- [ ] 7-zip
+	- [ ] TorGuard
+	- [ ] Steam
+	- [ ] Origin
+- [ ] Dev Setup
+	- [ ] Install [Bash subsystem](TODO)
+
+- [ ] Games
+	- [ ] Civ V & VI
+	- [ ] Overwatch

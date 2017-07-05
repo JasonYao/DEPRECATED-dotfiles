@@ -9,7 +9,8 @@ cask_packages=(
 	little-snitch micro-snitch
 	atom jetbrains-toolbox
 	google-chrome firefox
-	vlc skype qbittorrent mactex texmaker
+	vlc qbittorrent mactex texmaker
+	discord
 )
 
 function check_homebrew_cask_package() {
