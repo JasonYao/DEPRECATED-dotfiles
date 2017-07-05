@@ -62,13 +62,14 @@ iterm_download_link="https://iterm2.com/downloads/stable/latest"
 	fi
 
 # Runs iTerm as a process in the background
-	if [[ $(tail $iterm_info_plist | grep "</plist>" -B 3 | grep "LSUIElement") != "" ]]; then
-		success "iTerm: Application is already backgrounded"
-	else
-		info "iTerm: Application is not backgrounded yet, backgrounding now"
-		if perl -i -0pe 's/<\/dict>\n<\/plist>/\t<key>LSUIElement<\/key>\n\t<true\/>\n<\/dict>\n<\/plist>/' $iterm_info_plist ; then
-			success "iTerm: Application is now backgrounded"
-		else
-			fail "iTerm: Application failed to be backgrounded"
-		fi
-	fi
+warn "iTerm: Running iTerm as a process in the background is broken in Sierra, please wait for the next patch"
+#	if [[ $(tail $iterm_info_plist | grep "</plist>" -B 3 | grep "LSUIElement") != "" ]]; then
+#		success "iTerm: Application is already backgrounded"
+#	else
+#		info "iTerm: Application is not backgrounded yet, backgrounding now"
+#		if perl -i -0pe 's/<\/dict>\n<\/plist>/\t<key>LSUIElement<\/key>\n\t<true\/>\n<\/dict>\n<\/plist>/' $iterm_info_plist ; then
+#			success "iTerm: Application is now backgrounded"
+#		else
+#			fail "iTerm: Application failed to be backgrounded"
+#		fi
+#	fi
