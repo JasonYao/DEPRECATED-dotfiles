@@ -7,7 +7,7 @@ set -e
 homebrew_packages=(
 	coreutils wget autoconf automake make nano openssl pyenv pyenv-virtualenv
 	jenv mmv cmake rbenv bash readline diff-so-fancy unrar grep gnu-tar gnu-sed
-	gawk gzip shellcheck vim node tree nmap tmux go
+	gawk gzip shellcheck vim node tree nmap tmux go curl
 )
 
 # Any packages that requires flags upon

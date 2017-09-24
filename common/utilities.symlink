@@ -1,6 +1,6 @@
 # Listing commands
 	alias ls='ls --color'
-	alias ll='ls -alF'
+	alias ll='ls -alFh'
 	alias la='ls -A'
 	alias l='ls -CF'
 
@@ -28,7 +28,10 @@
 	alias ~="cd ~"                              # ~:            Go Home
 
 # Quick Access commands
-	alias mm="cd /Users/jason/Documents/Documents/Jobs/MediaMath"
+	alias projects="cd ~/projects"
 
 # Git commands
 	alias gsno="git status -uno" # Displays git status without the untracked files
+
+# Displaying commands
+	alias jpp='python -m json.tool' # JSON pretty print tool, just pipe the json in like: cat test.json | jpp

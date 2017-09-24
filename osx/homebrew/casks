@@ -10,7 +10,7 @@ cask_packages=(
 	atom jetbrains-toolbox
 	google-chrome firefox
 	vlc qbittorrent mactex texmaker
-	discord
+	discord java
 )
 
 function check_homebrew_cask_package() {
