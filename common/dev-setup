@@ -5,7 +5,7 @@
 ##
 
 # Python env stuff
-	python_versions=(3.6.1 2.7.13)
+	python_versions=(3.6.3 2.7.13)
 
 # Ruby env stuff
 	ruby_versions=(2.4.1)
@@ -37,7 +37,12 @@
 				if CFLAGS="-I$(xcrun --show-sdk-path)/usr/include" pyenv install "${version}" &> /dev/null ; then
 					success "Pyenv: Python version ${version} is now installed"
 				else
-					fail "Pyenv: Python version ${version} failed to install"
+					warn "Pyenv: CFlag setting when installing ${version} failed, attempting to install with CFlags and LDFlags"
+					if CFLAGS="-I$(brew --prefix openssl)/include" LDFLAGS="-L$(brew --prefix openssl)/lib" pyenv install "${version}" &> /dev/null ; then
+						success "Pyenv: Python version ${version} is now installed"
+					else
+						fail "Pyenv: Python version ${version} failed to install"
+					fi
 				fi
 			fi
 		else

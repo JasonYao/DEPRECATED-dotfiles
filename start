@@ -31,7 +31,9 @@ export dotfiles_directory
 
 # Installs xcode command line tools and accepts the license
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	if sudo xcodebuild -license accept ; then
+	# TODO P0: Remove the below line after
+	# if sudo xcodebuild -license accept ; then
+	if sudo xcode-select --install ; then
 		success "Xcode: Command-line tools successfully installed"
 	else
 		fail "Xcode: Command-line tools failed to be installed"
