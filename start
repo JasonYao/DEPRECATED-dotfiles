@@ -26,14 +26,23 @@ function fail () {
 	exit 1
 }
 
+function install_xcode() {
+    # Code from https://apple.stackexchange.com/questions/107307/how-can-i-install-the-command-line-tools-completely-from-the-command-line/195963#195963
+    touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress;
+    PROD=$(softwareupdate -l |
+      grep "\\*.*Command Line" |
+      tail -n 1 | awk -F"*" '{print $2}' |
+      sed -e 's/^ *//' |
+      tr -d '\n')
+    softwareupdate -i "${PROD}" --verbose;
+}
+
 : "${dotfiles_directory:="$HOME/.dotfiles"}"
 export dotfiles_directory
 
 # Installs xcode command line tools and accepts the license
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	# TODO P0: Remove the below line after
-	# if sudo xcodebuild -license accept ; then
-	if sudo xcode-select --install ; then
+	if install_xcode ; then
 		success "Xcode: Command-line tools successfully installed"
 	else
 		fail "Xcode: Command-line tools failed to be installed"
