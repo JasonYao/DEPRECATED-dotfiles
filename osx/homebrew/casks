@@ -10,14 +10,13 @@ cask_packages=(
 	atom jetbrains-toolbox
 	google-chrome firefox
 	vlc qbittorrent mactex texmaker
-	discord java iterm2 java8
+	discord java iterm2
 	skype
 )
 
 function check_homebrew_cask_package() {
 	if [[ $(brew cask list | grep "$1") == "" ]]; then
 		info "Homebrew-Cask: Application $1 has not been installed yet, installing now"
-		brew tap homebrew/versions
 		if brew cask install "$1" &> /dev/null ; then
 			success "Homebrew Casks: Application $1 is now installed"
 		else
