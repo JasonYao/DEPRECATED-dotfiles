@@ -143,6 +143,12 @@ function check_and_manage_dock_folders() {
 # Sets battery percentage to be shown
 	check_and_set_default "com.apple.menuextra.battery ShowPercent" 1 "Battery: Show percent battery remaining is already enabled" "-bool true" "Battery: Show percent battery is now enabled"
 
+# Sets the screen and computer to never sleep
+info "Battery: Disabling computer/display sleep"
+sudo systemsetup -setcomputersleep Never
+sudo systemsetup -setdisplaysleep Never
+success "Battery: Successfully disabled computer/display sleep"
+
 # Sets the trackpad speed to max (to set to another value, set between 0 ~ 3, to disable set to -1)
 	check_and_set_default "-g com.apple.trackpad.scaling" "6" "Trackpad: Tracking speed is already max" "-int 6" "Trackpad: Tracking speed is now set to max"
 
