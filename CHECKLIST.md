@@ -17,6 +17,7 @@
 
 - [ ] Copy or generate SSH keys
 	- To generate secure keys, use: `ssh-keygen -t ed25519 -o -a 512`
+	- For legacy systems where `ed25519` keys aren't available, use: `ssh-keygen -t rsa -b 4096`
 
 - [ ] Setup firmware password
 
