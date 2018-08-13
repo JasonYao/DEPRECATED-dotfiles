@@ -311,6 +311,30 @@ function check_and_manage_dock_folders() {
 check_and_set_default "com.apple.dock mru-spaces" 0 "Mission Control: Automatic rearranging spaces has already been disabled" \
 	"-bool false" "Mission Control: Automatic rearranging spaces is now disabled"
 
+# Points DNS to Google's DNS servers
+if [[ $(networksetup -getdnsservers Wi-Fi | grep "8.8.8.8") == "" ]]; then
+    info "DNS: Host's DNS servers do not point at Google, setting DNS servers now"
+		if networksetup -setdnsservers Wi-Fi 8.8.8.8 8.8.4.4 ; then
+			  success "DNS: Successfully set this host's DNS to point to google"
+		else
+			  fail "DNS: Failed to set this host's DNS to point to google"
+		fi
+else
+    success "DNS: Host's DNS servers already point at Google"
+fi
+
+# Sets the search domains to point to a dummy local file because fuck verizon
+if [[ $(networksetup -getsearchdomains Wi-Fi | grep ".local") == "" ]]; then
+	  info "Network Search: Network search is enabled and points to a dangerous 3rd party, resetting to secure local state"
+		if networksetup -setsearchdomains Wi-Fi .local ; then
+			  success "Network Search: Successfully disabled network search"
+		else
+			  fail "Network Search: Failed to disable network search"
+		fi
+else
+    success "Network Search: Network search is already disabled"
+fi
+
 # Sets the firewall rules
 	check_and_set_firewall "--getblockall" "DISABLED" "--setblockall on" "default to deny incoming traffic" "Default to deny incoming traffic"
 	check_and_set_firewall "--getstealthmode" "disabled" "--setstealthmode on" "default to activate stealth mode" "Stealth mode"
